@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pos/provider/product_provider.dart';
+import 'package:pos/provider/customer_provider.dart';
+import 'package:pos/provider/list_order_provider.dart';
+import 'package:pos/provider/order_provider.dart';
+import 'package:pos/screen/CheckConnect.dart';
+import 'package:pos/screen/change/change.dart';
+import 'package:pos/screen/customer.dart';
+// import 'package:pos/provider/product_provider.dart';
 import 'package:pos/screen/login.dart';
+import 'package:pos/screen/payment_widget/payment.dart';
+import 'package:pos/screen/receipt.dart';
 // import 'package:pos/routes/app_routes.dart';
 import 'package:pos/screen/sale_retail.dart';
 import 'package:pos/screen/sale_wholosale.dart';
+import 'package:pos/screen/setting.dart';
+import 'package:pos/screen/user_widget/add_user.dart';
 import 'package:provider/provider.dart';
 // import 'package:pos/screen/sale_wholosale.dart';
 // import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
@@ -45,7 +55,13 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context){
-          return ProductProvider();
+          return OrderProvider();
+        }),
+        ChangeNotifierProvider(create: (context){
+          return CustomerProvider();
+        }),
+        ChangeNotifierProvider(create: (context){
+          return ListOrderProvider();
         })
       ],
       child: MaterialApp(
@@ -55,13 +71,22 @@ class MyApp extends StatelessWidget {
           Login.RouteName: (context) => Login(),
           SaleRetail.RouteName: (context) => SaleRetail(),
           SaleWholosale.RouteName: (context) => SaleWholosale(),
+          // PaySuccess.RouteName: (context) => PaySuccess(),
+          UserAddScreen.RouteName: (context) => UserAddScreen(),
+          Change.RouteName: (context) => Change(),
+          Receipt.RouteName: (context) => Receipt(),
+          Customer.RouteName: (context) => Customer(),
+          Setting.RouteName: (context) => Setting(),
+          CheckConnect.RouteName: (context) => CheckConnect(),
         },
         title: 'Flutter Demo',
     
         theme: ThemeData(
+
           fontFamily: 'IBM Plex Sans Thai',
           primarySwatch:  createMaterialColor(Color(0xffFE7200)),
           accentColor: Colors.white,
+
         ),
         // home: MainPage(),
         home: Login(),

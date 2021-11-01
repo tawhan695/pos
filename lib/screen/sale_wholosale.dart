@@ -7,9 +7,25 @@ import 'package:pos/models/cart_model.dart';
 import 'package:pos/models/catagory_model.dart';
 import 'package:pos/models/product_model.dart';
 import 'package:pos/network_api/api.dart';
+import 'package:pos/provider/catagory_provider.dart';
+import 'package:pos/provider/customer_provider.dart';
+import 'package:pos/provider/order_provider.dart';
 import 'package:pos/provider/product_provider.dart';
+import 'package:pos/screen/cash.dart';
+import 'package:pos/screen/customer.dart';
+import 'package:pos/screen/receipt.dart';
 import 'package:pos/screen/sale_widget/cart.dart';
+import 'package:pos/screen/setting.dart';
+import 'package:pos/screen/user_widget/user.dart';
 import 'package:provider/provider.dart';
+import 'package:rating_dialog/rating_dialog.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_image/flutter_image.dart';
+// import 'package:flutter/services.dart';
+import 'package:connectivity/connectivity.dart';
+import 'dart:io';
+import 'dart:async';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class SaleWholosale extends StatefulWidget {
   // SaleWholosale({Key? key}) : super(key: key);
@@ -25,22 +41,37 @@ class _SaleWholosaleState extends State<SaleWholosale> {
   var sale = '0';
   var catagory = 'all';
   var Typesale = 'wholesale_price';
-  String URL = 'https://mtn.tawhan-studio.com/';
-  // List<CatagoryModel> catagory =[];
+  var search = '';
+  bool Issearch = false;
+  String URL = 'http://192.168.30.155/mtn-tawhan/public/';
+  List<CatagoryModel> _order = [];
   // @override
   // catagory  is a list
 
+  // checkConnectivity
+  String _connectionStatus = 'Unknown';
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+
+
   Future<List<CatagoryModel>> getCatagory() async {
     final response = await Network().getData2('/catagory');
-    var body = json.decode(response.body);
     List<CatagoryModel> _listCatagory = [];
+    if(response == 'error'){
+      // _AlertNet(context);
+    }else{
+
+    var body = json.decode(response.body);
     CatagoryModel catagory = CatagoryModel(-1, 'all');
+    CatagoryModel search = CatagoryModel(-2, 'search');
+    // _listCatagory.add(search);
     _listCatagory.add(catagory);
     body.forEach((e) {
       CatagoryModel catagory = CatagoryModel(e['id'], e['name']);
       _listCatagory.add(catagory);
     });
     print(_listCatagory.length);
+    }
     return _listCatagory;
   }
 
@@ -53,82 +84,158 @@ class _SaleWholosaleState extends State<SaleWholosale> {
           {'sale': '$sale_id', 'catagory': '$catagory_id'}, '/product');
     }
 
-    var body = json.decode(res.body);
     List<ProductModel> productModel = [];
+    if (res == 'error') {
+      // _AlertNet(context);
+    } else {
+    var body = json.decode(res.body);
     body.forEach(
       (e) {
-        ProductModel products = ProductModel(
-            e['id'],
-            e['name'],
-            e['sku'],
-            e['unit'],
-            e['retail_price'],
-            e['wholesale_price'],
-            e['sale_price'],
-            e['qty'],
-            e['image']);
-        productModel.add(products);
+        if (Issearch) {
+          if (search == e['name'] || search == e['id'] || search == e['sku']) {
+            ProductModel products = ProductModel(
+                e['id'],
+                e['name'],
+                e['sku'],
+                e['unit'],
+                e['retail_price'],
+                e['wholesale_price'],
+                e['sale_price'],
+                e['qty'],
+                e['image']);
+            productModel.add(products);
+          }
+        } else {
+          ProductModel products = ProductModel(
+              e['id'],
+              e['name'],
+              e['sku'],
+              e['unit'],
+              e['retail_price'],
+              e['wholesale_price'],
+              e['sale_price'],
+              e['qty'],
+              e['image']);
+          productModel.add(products);
+        }
       },
     );
+    }
     return productModel;
   }
 
-  Future<void> addCart(sku) async {
-    var res = await Network().getData({'sku': '$sku'}, '/cart');
-    // var body = json.decode(res.body);
-    print('add');
+  final _controller = TextEditingController();
+  final _search = TextEditingController();
+  var SUM = 0;
+  void showDeitDialog(id, qty) {
+    _controller.text = qty.toString();
+    // Create button
+    //  String qty ='';
+    Widget okButton = FlatButton(
+      child: Text(
+        "บันทึก",
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 27, color: Colors.orange),
+      ),
+      onPressed: () {
+        print(_controller.text);
+        Provider.of<OrderProvider>(context, listen: false)
+            .changQty(id, _controller.text);
+        Navigator.of(context).pop();
+      },
+    );
+
+    // Create AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(
+        "แก้ไขจำนวน",
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 35, color: Colors.orange),
+      ),
+      content: TextFormField(
+        controller: _controller,
+        keyboardType: TextInputType.number,
+        inputFormatters: <TextInputFormatter>[
+          WhitelistingTextInputFormatter.digitsOnly
+        ],
+        decoration: InputDecoration(
+          labelText: "จำนวนสินค้า",
+          hintText: "จำนวนสินค้า",
+          icon: Icon(
+            Icons.edit_outlined,
+            size: 26,
+          ),
+        ),
+      ),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
-  // Cart
-  Future<List<CartModel>> getCart() async {
-    double sum = 0.0;
-    var price;
-    var quantity;
-    var product_id;
-    List<CartModel> cartList = [];
-    final response = await Network().getData3('/cart');
-    var body = json.decode(response.body);
-    // print(body);
-    body.forEach((e) {
-      product_id = e['pivot']['product_id'];
-      quantity = e['pivot']['quantity'];
-      if (Typesale == 'retail_price') {
-        price = e['retail_price'];
-      } else if (Typesale == 'wholesale_price') {
-        price = e['wholesale_price'];
-      }
-      CartModel val = CartModel(
-          e['id'], e['name'], e['image'], price, quantity, product_id);
-      cartList.add(val);
-    });
-    return cartList;
-  }
-
-  // Future<void> addCart() async {
-  //   double sum = 0.0;
-  //   List<CartModel> cart = [];
-  //   final response = await Network().getData2('/cart');
-  //   var body = json.decode(response.body);
-  //   print(body);
-  //   body.forEach((e) {
-  //     print(e);
-  //     print('pivot ' + e['pivot']);
-  //   });
-  // }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    // Provider.of<ProductProvider>(context, listen: false).initData('1', 'all');
-    // Cart().setTypeSale('retail_price');
-    // Cart().getCart();
-    // catagory =
-    // _product();
-    // print('fetchCatagory()');
-    // print(getCatagory());
-    // print(fetchCatagory());
+    initConnectivity();
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    Provider.of<OrderProvider>(context, listen: false).initCart();
   }
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+  Future<void> initConnectivity() async {
+    ConnectivityResult result = ConnectivityResult.none;
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      print(e.toString());
+    }
+    if (!mounted) {
+      return Future.value(null);
+    }
 
+    return _updateConnectionStatus(result);
+  }
+   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    switch (result) {
+      case ConnectivityResult.wifi:
+        setState(() => _connectionStatus = result.toString());
+        print(' Internet ${result.toString()}');
+        break;
+      case ConnectivityResult.mobile:
+        setState(() => _connectionStatus = result.toString());
+        print(' Internet ${result.toString()}');
+        break;
+      case ConnectivityResult.none:
+        setState(() => _connectionStatus = result.toString());
+        print('โปรดเชื่อมต่อ Internet');
+        _AlertNet(context);
+        break;
+      default:
+        setState(() => _connectionStatus = 'Failed to get connectivity.');
+        break;
+    }
+  }
+  _AlertNet(context){
+      Alert(
+          context: context,
+          title: "การเชื่อมต่ออินเตอร์เน็ตล้มเหลว",
+          desc: "โปรเชื่อมต่อ อินเตอร์เน็ต",
+        ).show();
+  }
+  bool Hsearch = true;
   @override
   Widget build(BuildContext context) {
     return AdvancedDrawer(
@@ -155,7 +262,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                   height: 128.0,
                   margin: const EdgeInsets.only(
                     top: 24.0,
-                    bottom: 64.0,
+                    // bottom: 64.0,
                   ),
                   clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
@@ -164,28 +271,50 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                     shape: BoxShape.circle,
                   ),
                   child: Image.asset(
-                    'assets/avocado.png',
+                    'assets/images/5942.png',
+                  ),
+                ),
+                Center(
+                  child: Text('ออกจากระบบ'),
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        SaleWholosale.RouteName, (route) => false);
+                  },
+                  tileColor: Colors.white,
+                  leading: Icon(
+                    Icons.storefront_sharp,
+                    color: Colors.orange,
+                  ),
+                  title: Text(
+                    'ขาย',
+                    style: TextStyle(color: Colors.orange),
                   ),
                 ),
                 ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.home),
-                  title: Text('Home'),
+                  onTap: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        Receipt.RouteName, (route) => false);
+                  },
+                  leading: Icon(Icons.list_alt_rounded),
+                  title: Text('ใบเสร็จ'),
                 ),
                 ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.account_circle_rounded),
-                  title: Text('Profile'),
+                  onTap: () {
+                    //  Navigator.of(context).pushNamedAndRemoveUntil(Customer.RouteName, (route) => false);
+                    Navigator.of(context).pushNamed(Customer.RouteName);
+                  },
+                  leading: Icon(Icons.person),
+                  title: Text('ลูกค้า'),
                 ),
                 ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.favorite),
-                  title: Text('Favourites'),
-                ),
-                ListTile(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        Setting.RouteName, (route) => false);
+                  },
                   leading: Icon(Icons.settings),
-                  title: Text('Settings'),
+                  title: Text('ตั้งค่า'),
                 ),
                 Spacer(),
                 DefaultTextStyle(
@@ -207,7 +336,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Advanced Drawer Example'),
+          title: const Text('Tawhan POS ( มัทนาไข่สด )'),
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
@@ -232,15 +361,125 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                 flex: 6,
                 child: Column(
                   children: [
+                    // Hsearch == false ?Container(child: Text('Search'),):Container(),
+
                     Container(
                       height: 80,
                       // color: Colors.black12,
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 10),
+                      margin:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
+                            Container(
+                              height: 90,
+                              padding: EdgeInsets.only(right: 20, left: 20),
+                              child: Hsearch
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          isActive = -1;
+                                          Hsearch = false;
+                                          print(Hsearch);
+                                        });
+                                      },
+                                      child: Container(
+                                        width: Hsearch ? 80 : 400,
+                                        height: 80,
+                                        margin: EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                          color: (isActive == -1)
+                                              ? Color(0xffFF8F33)
+                                              : Colors.white,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20.0)),
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color:
+                                                    Colors.black.withAlpha(100),
+                                                blurRadius: 5.0),
+                                          ],
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(7.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                              Icon(
+                                                Icons.search,
+                                                size: 46,
+                                              )
+
+                                              // Text(
+                                              //   'ค้นหา',
+                                              //   style: TextStyle(
+                                              //       fontSize: 20,
+                                              //       color: (isActive == -1)
+                                              //           ? Colors.white
+                                              //           : Colors.black,
+                                              //       fontWeight: FontWeight.bold),
+                                              // ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : Row(
+                                      children: [
+                                        Container(
+                                          width: 500,
+                                          height: 80,
+                                          margin: EdgeInsets.only(top: 7),
+                                          child: TextFormField(
+                                            controller: _search,
+                                            decoration: const InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(20),
+                                                    bottomLeft:
+                                                        Radius.circular(20)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.white),
+                                              ),
+                                              //  suffix: Icon(Icons.search),
+                                              prefixIcon: Icon(Icons.search),
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          height: 65,
+                                          child: ElevatedButton(
+                                              style: ButtonStyle(
+                                                  shape: MaterialStateProperty.all<
+                                                          RoundedRectangleBorder>(
+                                                      RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.only(
+                                                              topRight: Radius
+                                                                  .circular(20),
+                                                              bottomRight:
+                                                                  Radius.circular(
+                                                                      20)),
+                                                          side: BorderSide(
+                                                              color: Colors
+                                                                  .red)))),
+                                              onPressed: () {
+                                                setState(() {
+                                                  print(_search.text);
+                                                  search = _search.text;
+                                                  Issearch = true;
+                                                });
+                                              },
+                                              child: Text(
+                                                'ค้นหา',
+                                                style: TextStyle(fontSize: 16),
+                                              )),
+                                        )
+                                      ],
+                                    ),
+                            ),
                             FutureBuilder(
                               future: getCatagory(),
                               builder: (context, AsyncSnapshot snapshot) {
@@ -258,6 +497,8 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                 isActive = 0;
                                                 sale = '0';
                                                 catagory = 'all';
+                                                Hsearch = true;
+                                                print(Hsearch);
                                               });
                                             },
                                             child: Container(
@@ -308,8 +549,11 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                             setState(() {
                                               isActive = index;
                                               sale = '0';
+                                              Issearch = false;
                                               catagory =
                                                   '${snapshot.data[index].id}';
+                                              Hsearch = true;
+                                              print(Hsearch);
                                             });
                                           },
                                           child: Container(
@@ -375,18 +619,18 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                             builder: (context, AsyncSnapshot snapshot) {
                               if (snapshot.data != null) {
                                 return Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 2, vertical: 1),
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(5.0)),
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      // BoxShadow(
-                                      //     // color: Colors.black.withAlpha(100),
-                                      //     blurRadius: 1.0),
-                                    ],
-                                  ),
+                                  // margin: const EdgeInsets.symmetric(
+                                  //     horizontal: 2, vertical: 1),
+                                  // decoration: BoxDecoration(
+                                  //   borderRadius:
+                                  //       BorderRadius.all(Radius.circular(10.0)),
+                                  //   color: Colors.white,
+                                  //   boxShadow: [
+                                  //     // BoxShadow(
+                                  //     //     // color: Colors.black.withAlpha(100),
+                                  //     //     blurRadius: 1.0),
+                                  //   ],
+                                  // ),
                                   padding: const EdgeInsets.all(10.0),
                                   child: GridView.builder(
                                       gridDelegate:
@@ -395,15 +639,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                       ),
                                       itemCount: snapshot.data.length,
                                       itemBuilder: (BuildContext ctx, index) {
-                                        return InkWell(
-                                          splashColor: Color(0xffFF8F33),
-                                          highlightColor: Color(0xffFF8F33)
-                                              .withOpacity(0.3),
-                                          onTap: () {
-                                            addCart(snapshot.data[index].sku);
-                                            print(
-                                                'id : ${snapshot.data[index].id} id : ${snapshot.data[index].sku} price: ${snapshot.data[index].retail_price}');
-                                          },
+                                        return Container(
                                           child: Container(
                                             alignment: Alignment.center,
                                             child: Container(
@@ -411,86 +647,180 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                               // width: 210,
                                               margin:
                                                   const EdgeInsets.symmetric(
-                                                      horizontal: 15,
-                                                      vertical: 15),
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(20.0)),
-                                                color: Colors.white,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                      color: Colors.black
-                                                          .withAlpha(100),
-                                                      blurRadius: 10.0),
-                                                ],
-                                              ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 10),
-                                                child: Stack(
-                                                  // fit: StackFit.passthrough,
-                                                  // overflow: Overflow.visible,
-                                                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: <Widget>[
-                                                    Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: <Widget>[
-                                                        Expanded(
-                                                          child: Center(
-                                                            child:
-                                                                Image.network(
-                                                              "${URL + snapshot.data[index].image}",
-                                                              // height: 65
-                                                              // double.infinity,
+                                                      horizontal: 5,
+                                                      vertical: 5),
+
+                                              child: ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  // color: Colors.white,
+                                                  primary:
+                                                      snapshot.data[index].qty >
+                                                              0
+                                                          ? Colors.white
+                                                          : Colors.grey[350],
+
+                                                  onPrimary: Colors.black,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16), // <-- Radius
+                                                  ),
+                                                ),
+                                                onPressed: () {
+                                                  var provider = Provider.of<
+                                                          OrderProvider>(
+                                                      context,
+                                                      listen: false);
+                                                  if (provider.e429()) {
+                                                    showAlertDialog(context);
+                                                  }
+                                                  // snapshot.data[index].qty > 0 ?
+
+                                                  print(
+                                                      'qty ${snapshot.data[index].qty}');
+                                                  if (snapshot.data[index].qty >
+                                                      0) {
+                                                    provider.addCart(snapshot
+                                                        .data[index].sku);
+                                                    snapshot.data[index].qty -
+                                                        1;
+                                                  } else {
+                                                    showAlertDialog2(context);
+                                                  }
+                                                  // print('qty ${snapshot.data[index].qty}')
+                                                },
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 10),
+                                                  child: Stack(
+                                                    children: <Widget>[
+                                                      Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: <Widget>[
+                                                          Expanded(
+                                                            child: Center(
+                                                              child:
+                                                                  Image.network(
+                                                                "${URL + snapshot.data[index].image}",
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                loadingBuilder:
+                                                                    (context,
+                                                                        child,
+                                                                        loadingProgress) {
+                                                                  if (loadingProgress ==
+                                                                      null)
+                                                                    return child;
+                                                                  return Center(
+                                                                      child:
+                                                                          CircularProgressIndicator());
+                                                                },
+                                                                errorBuilder: (context,
+                                                                        exception,
+                                                                        stackTrack) =>
+                                                                    Icon(
+                                                                  Icons.error,
+                                                                ),
+                                                              ),
+                                                              //     Image(
+                                                              //   image: NetworkImage("${URL + snapshot.data[index].image}",),
+                                                              //   errorBuilder: (context, exception, stackTrack) => Icon(Icons.error,),
+                                                              //   // imageErrorBuilder:(context, exception, stackTrack) => Icon(Icons.error,),
+                                                              //   // height: 65
+                                                              //   // double.infinity,
+                                                              // ),
                                                             ),
                                                           ),
-                                                        ),
-                                                        SizedBox(height: 5),
-                                                        Center(
-                                                          child: Text(
-                                                            snapshot
+                                                          SizedBox(height: 5),
+                                                          Center(
+                                                            child: snapshot
                                                                         .data[
                                                                             index]
-                                                                        .name
-                                                                        .length >
-                                                                    14
-                                                                ? snapshot
-                                                                        .data[
-                                                                            index]
-                                                                        .name
-                                                                        .substring(
-                                                                            0,
-                                                                            14) +
-                                                                    '...'
-                                                                : snapshot
-                                                                    .data[index]
-                                                                    .name,
-                                                            style: const TextStyle(
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
+                                                                        .qty >
+                                                                    0
+                                                                ? Text(
+                                                                    snapshot.data[index].name.length >
+                                                                            14
+                                                                        ? snapshot.data[index].name.substring(0,
+                                                                                14) +
+                                                                            '...'
+                                                                        : snapshot
+                                                                            .data[index]
+                                                                            .name,
+                                                                    style: const TextStyle(
+                                                                        fontSize:
+                                                                            16,
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  )
+                                                                : Text(
+                                                                    snapshot.data[index].name.length >
+                                                                            14
+                                                                        ? snapshot.data[index].name.substring(0,
+                                                                                14) +
+                                                                            '...'
+                                                                        : snapshot
+                                                                            .data[index]
+                                                                            .name,
+                                                                    style: const TextStyle(
+                                                                        fontSize:
+                                                                            16,
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
                                                           ),
-                                                        ),
-                                                        Center(
-                                                          child: Text(
-                                                            "฿ ${snapshot.data[index].retail_price}",
-                                                            style: const TextStyle(
-                                                                fontSize: 15,
-                                                                color: Colors
-                                                                    .black,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
+                                                          Container(
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center, //Center Row contents horizontally,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .center, //Center Row contents vertically,
+                                                              children: [
+                                                                snapshot.data[index]
+                                                                            .qty >
+                                                                        0
+                                                                    ? Text(
+                                                                        "฿ ${snapshot.data[index].retail_price}/",
+                                                                        style: const TextStyle(
+                                                                            fontSize:
+                                                                                15,
+                                                                            color:
+                                                                                Colors.black,
+                                                                            fontWeight: FontWeight.bold),
+                                                                      )
+                                                                    : Text(
+                                                                        "( หมด )฿ ${snapshot.data[index].retail_price}/",
+                                                                        style: const TextStyle(
+                                                                            fontSize:
+                                                                                15,
+                                                                            color:
+                                                                                Colors.black,
+                                                                            fontWeight: FontWeight.bold),
+                                                                      ),
+                                                                Text(
+                                                                  "${snapshot.data[index].wholesale_price}",
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          13,
+                                                                      color: Colors
+                                                                          .black54,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -519,153 +849,394 @@ class _SaleWholosaleState extends State<SaleWholosale> {
               ),
               //right
               Expanded(
-                flex: 2,
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      height: 60,
-                      child: Text('Title'),
-                    ),
-                    Expanded(
-                      child: Container(
-                        child: FutureBuilder(
-                            future: getCart(),
-                            builder: (context, AsyncSnapshot snapshot) {
-                              if (snapshot.data != null) {
-                                // return Text('text ${snapshot.data.length}');
-                                return ListView.builder(
+                flex: 3,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withAlpha(100), blurRadius: 5.0),
+                    ],
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        // height: 80,
+                        child: Row(
+                          children: [
+                            Container(
+                                padding: EdgeInsets.only(left: 20),
+                                child: Text(
+                                  'ออร์เดอร์',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 30,
+                                      color: Colors.black54),
+                                )),
+                            Spacer(),
+                            //Customer
+                            Container(
+                              padding: EdgeInsets.all(10),
+                              child: Consumer(builder: (context,
+                                  CustomerProvider customers, Widget) {
+                                return Column(
+                                  children: [
+                                    customers.selectCustomer().length > 0
+                                        ? IconButton(
+                                            color: Color(0xffFE7300),
+                                            onPressed: () {
+                                              customers.emtySelect();
+                                            },
+                                            icon: Icon(
+                                              Icons.person_remove,
+                                              size: 40,
+                                            ))
+                                        : IconButton(
+                                            color: Color(0xffFE7300),
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      UserScreen(),
+                                                ),
+                                              );
+                                            },
+                                            icon: Icon(
+                                              Icons.person_add_alt,
+                                              size: 40,
+                                            ))
+                                  ],
+                                );
+                              }),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(10),
+                              child: Column(
+                                children: [
+                                  IconButton(
+                                      color: Color(0xffFE7300),
+                                      onPressed: () {
+                                        Provider.of<OrderProvider>(context,
+                                                listen: false)
+                                            .emptyCart();
+                                      },
+                                      icon: Icon(
+                                        Icons.delete_forever_sharp,
+                                        size: 40,
+                                      )),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Consumer(builder:
+                          (context, CustomerProvider customers, Widget) {
+                        return Container(
+                          child: customers.selectCustomer().length > 0
+                              ? Card(
+                                  child: Text(
+                                    'ลูกค้า ${customers.selectCustomer()[0].name} ${customers.selectCustomer()[0].phone}',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.orange[800]),
+                                  ),
+                                )
+                              : Container(),
+                        );
+                      }),
+                      Expanded(
+                        child: Container(
+                          child: Consumer(
+                            builder: (BuildContext context, OrderProvider order,
+                                Widget) {
+                              var count = order.getCart().length;
+                              if (count > 0) {
+                                return new ListView.builder(
                                     // padding: const EdgeInsets.all(8),
-                                    itemCount: snapshot.data.length,
+                                    itemCount: count,
                                     // itemCount: 2,
                                     itemBuilder: (context, index) {
+                                      CartModel data = order.getCart()[index];
+
                                       return Container(
-                                            padding:EdgeInsets.all(3),
-                                          child: Row(
-                                        children: [
-                                          //img
-                                          Image.network(
-                                            "${URL + snapshot.data[index].image}",
-                                            width: 70,
-                                          ),
-                                          Container(
-                                            padding:EdgeInsets.all(10),
+                                        padding: EdgeInsets.all(2),
+                                        child: ListTile(
+                                          onTap: () {},
+                                          title: Container(
                                             child: Column(
-                                              
                                               children: [
-                                                Text(
-                                                  '${snapshot.data[index].name}',
-                                                  style: TextStyle(fontSize: 20),
+                                                Container(
+                                                  // alignment: Alignment.topRight,
+                                                  child: Row(
+                                                    children: [
+                                                      Container(
+                                                        margin: EdgeInsets.only(
+                                                            right: 10),
+                                                        child: Image.network(
+                                                          "${URL + data.image}",
+                                                          width: 70,
+                                                          fit: BoxFit.cover,
+                                                          loadingBuilder: (context,
+                                                              child,
+                                                              loadingProgress) {
+                                                            if (loadingProgress ==
+                                                                null)
+                                                              return child;
+                                                            return Center(
+                                                                child:
+                                                                    CircularProgressIndicator());
+                                                          },
+                                                          errorBuilder: (context,
+                                                                  exception,
+                                                                  stackTrack) =>
+                                                              Icon(
+                                                            Icons.error,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start, //Center Row contents horizontally,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .zero,
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      left: 1),
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topRight,
+                                                              child: Text(
+                                                                data.name.length >
+                                                                        20
+                                                                    ? data.name.substring(
+                                                                            0,
+                                                                            20) +
+                                                                        '...'
+                                                                    : data.name,
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        20,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color: Colors
+                                                                        .black54),
+                                                              ),
+                                                            ),
+                                                            Container(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topRight,
+                                                              child: Row(
+                                                                children: [
+                                                                  Text(
+                                                                    '฿${data.price}',
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            20,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        color: Colors
+                                                                            .black54),
+                                                                  ),
+                                                                  Text(
+                                                                    ' X${data.quantity}',
+                                                                    style: TextStyle(
+                                                                        fontSize:
+                                                                            20,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        color: Colors
+                                                                            .green),
+                                                                  ),
+                                                                  // Spacer(),
+                                                                  Container(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .topLeft,
+                                                                    padding: EdgeInsets
+                                                                        .only(
+                                                                            left:
+                                                                                20),
+                                                                    child: Text(
+                                                                      ' ฿${data.sum}',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              19,
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          color:
+                                                                              Colors.black),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Spacer(),
+                                                      Container(
+                                                        color:
+                                                            Colors.orange[300],
+                                                        child: IconButton(
+                                                          onPressed: () {
+                                                            showDeitDialog(
+                                                                data.id,
+                                                                data.quantity);
+                                                          },
+                                                          icon: Icon(
+                                                            Icons.edit,
+                                                            size: 30,
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        color: Colors.red[300],
+                                                        child: IconButton(
+                                                          onPressed: () {
+                                                            var provider = Provider
+                                                                .of<OrderProvider>(
+                                                                    context,
+                                                                    listen:
+                                                                        false);
+                                                            provider
+                                                                .del(data.id);
+                                                          },
+                                                          icon: Icon(
+                                                            Icons
+                                                                .delete_forever_sharp,
+                                                            size: 30,
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                                Text(
-                                                  '${snapshot.data[index].price} X ${snapshot.data[index].quantity}',
-                                                  style: TextStyle(fontSize: 16),
-                                                ),
-                                                
                                               ],
                                             ),
                                           ),
-                                          // Text(
-                                          //   '$index',
-                                          //   style: TextStyle(fontSize: 30),
-                                          // ),
-                                          // Text(
-                                          //   '$index',
-                                          //   style: TextStyle(fontSize: 30),
-                                          // ),
-                                          //text
-                                        ],
-                                      ));
+                                        ),
+                                      );
                                     });
                               } else {
                                 return Center(
-                                  child: Text('Loading...'),
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(40),
+                                        child: Image.asset(
+                                            'assets/images/5942.png'),
+                                      ),
+                                      Text(
+                                        'รอการขาย',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 40,
+                                            color: Colors.black54),
+                                      ),
+                                    ],
+                                  ),
                                 );
                               }
-                            }),
+                            },
+                            // future: getCart(),
+                          ),
+                        ),
                       ),
-                    ),
-                    // Spacer(
-                    //   flex: 2,
-                    // ),
-                    Container(
-                      height: 150,
-                      child: Text('data'),
-                    ),
-                  ],
+                      Consumer(
+                        builder: (BuildContext context, OrderProvider order,
+                            Widget? child) {
+                          return Container(
+                            height: 60,
+                            padding: EdgeInsets.only(right: 20, top: 10),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(2.0)),
+                              color: Colors.white,
+                              // boxShadow: [
+                              //   BoxShadow(
+                              //       color: Colors.black.withAlpha(100),
+                              //       blurRadius: 3.0),
+                              // ],
+                            ),
+                            child: Row(
+                              children: [
+                                Container(),
+                                Spacer(),
+                                Column(
+                                  children: [
+                                    Text(
+                                      'รวม     ฿${order.getSum().toString()} ',
+                                      style: TextStyle(
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.green),
+                                    ),
+                                    // Text(),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        height: 80,
+                        width: double.infinity,
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (Provider.of<OrderProvider>(context,
+                                        listen: false)
+                                    .getSum() >
+                                0) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Cash_screen()),
+                              );
+                            }
+                          },
+                          //  icon: Icon(Icons.attach_money_rounded),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.attach_money,
+                                size: 35,
+                              ),
+                              Text(
+                                'ชำระเงิน',
+                                style: TextStyle(
+                                    fontSize: 30, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               )
-              // Container(
-              //   width: 300,
-              //   // color: Colors.blue,
-              //   margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
-              //   decoration: BoxDecoration(
-              //     borderRadius: BorderRadius.all(Radius.circular(5.0)),
-              //     color: Colors.blue,
-              //     boxShadow: [
-              //       BoxShadow(
-              //           color: Colors.black.withAlpha(100), blurRadius: 2.0),
-              //     ],
-              //   ),
-              //   child: Expanded(
-              //     child: Column(
-              //       children: [
-              //         Container(
-              //           color: Colors.black,
-              //           height: 60,
-              //           child: Text('order'),
-              //         ),
-              //         Container(
-              //           // width:500,
-              //           color: Colors.black.withAlpha(100),
-              //           child: Row(
-              //             children: [
-              //               Container(
-              //                 child: SingleChildScrollView(
-              //                   scrollDirection: Axis.vertical,
-              //                   child: Column(
-              //                     children: <Widget>[
-              //                       Expanded(
-              //                         child: Column(
-              //                           children: [
-              //                             Container(
-              //                               child: FutureBuilder(
-              //                                   future: getCart(),
-              //                                   builder:
-              //                                       (context, AsyncSnapshot snapshot) {
-              //                                     if (snapshot.data != null) {
-              //                                       // return Text('text ${snapshot.data.length}');
-              //                                       return Container(
-              //                                         child: ListView.builder(
-              //                                             padding: const EdgeInsets.all(8),
-              //                                             itemCount: snapshot.data.length,
-              //                                             // itemCount: 2,
-
-              //                                             itemBuilder: (context, index) {
-              //                                               return Container(
-              //                                                   child: Text('Entry'));
-              //                                             },),
-              //                                       );
-              //                                     } else {
-              //                                       return Center(
-              //                                         child: Text('Loading...'),
-              //                                       );
-              //                                     }
-              //                                   }),
-              //                             ),
-              //                           ],
-              //                         ),
-              //                       ),
-              //                     ],
-              //                   ),
-              //                 ),
-              //               ),
-              //             ],
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ),
@@ -678,4 +1249,61 @@ class _SaleWholosaleState extends State<SaleWholosale> {
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
+}
+
+showAlertDialog(BuildContext context) {
+  // Create button
+  Widget okButton = FlatButton(
+    child: Text("OK"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+
+  // Create AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("แจ้งเตือน"),
+    content: Text("เพิ่มเร็วเกินไป! \n โปรรอสักครู่..."),
+    actions: [
+      okButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+showAlertDialog2(BuildContext context) {
+  // Create button
+  Widget okButton = FlatButton(
+    child: Text("OK"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+
+  // Create AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("แจ้งเตือน"),
+    content: Text(
+      "สินค้าหมด",
+      style: TextStyle(fontSize: 40),
+    ),
+    actions: [
+      okButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

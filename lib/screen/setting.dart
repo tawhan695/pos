@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:pos/screen/customer.dart';
+import 'package:pos/screen/printter/printter.dart';
+import 'package:pos/screen/product/product.dart';
 import 'package:pos/screen/receipt.dart';
 import 'package:pos/screen/sale_wholosale.dart';
 import 'package:flutter/services.dart';
@@ -155,6 +157,14 @@ class _SettingState extends State<Setting> {
                 ),
                 ListTile(
                   onTap: () {
+                    //  Navigator.of(context).pushNamedAndRemoveUntil(Customer.RouteName, (route) => false);
+                    Navigator.of(context).pushNamed(ProductScreen.RouteName);
+                  },
+                  leading: Icon(Icons.card_travel),
+                  title: Text('รายการสินค้า'),
+                ),
+                ListTile(
+                  onTap: () {
                      
                      Navigator.of(context).pushNamedAndRemoveUntil(Setting.RouteName, (route) => false);
                   },
@@ -204,12 +214,33 @@ class _SettingState extends State<Setting> {
             ),
           ),
         ),
-        body: Container(child: Text('setting'),),
+        body: Container(
+          margin: EdgeInsets.symmetric(vertical: 50,horizontal:50),
+          child: Column(
+            children: <Widget>[
+              Card(
+                child: ListTile(
+                  title: Text('เครื่องพิมพ์',style: TextStyle(fontSize:30)),
+                  leading:  Icon(Icons.print,size: 50),
+                  onTap: () {   
+                    Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => Printer()));
+                    }
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  title: Text('อื่นๆ',style: TextStyle(fontSize:30)),
+                  leading:  Icon(Icons.settings,size: 50),
+                ),
+              ),
+
+              // Text('setting'),
+            ],
+          ),
+          ),
         ),
-        );
-        
-        
-      
+        );  
   }
    void _handleMenuButtonPressed() {
     // NOTICE: Manage Advanced Drawer state through the Controller.

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:pos/provider/customer_provider.dart';
+import 'package:pos/screen/product/product.dart';
 import 'package:pos/screen/receipt.dart';
 import 'package:pos/screen/sale_wholosale.dart';
 import 'package:pos/screen/setting.dart';
@@ -97,6 +98,14 @@ class _CustomerState extends State<Customer> {
                    style: TextStyle(color: Colors.orange,),
                    
                   ),
+                ),
+                ListTile(
+                  onTap: () {
+                    //  Navigator.of(context).pushNamedAndRemoveUntil(Customer.RouteName, (route) => false);
+                    Navigator.of(context).pushNamed(ProductScreen.RouteName);
+                  },
+                  leading: Icon(Icons.card_travel),
+                  title: Text('รายการสินค้า'),
                 ),
                 ListTile(
                   onTap: () {

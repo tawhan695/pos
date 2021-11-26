@@ -24,7 +24,7 @@ class _UserScreenState extends State<UserScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    
+     Provider.of<CustomerProvider>(context, listen: false).initCustomer();
 
     // FocusScope.of(context).unfocus();
     // focusNode = FocusNode();
@@ -35,10 +35,11 @@ class _UserScreenState extends State<UserScreen> {
     // provider.initCustomer();
     //  print(provider.getListCustomer());
   }
+  
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<CustomerProvider>(context, listen: false).initCustomer();
+   
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -137,8 +138,8 @@ class _UserScreenState extends State<UserScreen> {
                   child: Consumer(
                     builder: (context, CustomerProvider customers, Widget) {
                       int count = customers.getListCustomer().length;
+                        print('customers ${customers.getListCustomer()}');
                       if (count > 0) {
-                        print(customers.getListCustomer()[0]);
                         return
                             // Container();
                             ListView.builder(

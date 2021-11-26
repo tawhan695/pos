@@ -40,9 +40,16 @@ class ListOrderProvider with ChangeNotifier{
     notifyListeners();
   }
    
-   initListorder() async {
+   initListorder(page) async {
+
   List<ListOrder_model> _order = [];
-      final res =   await Network().getData3('/order');
+       var res;
+      if (page == 0){
+        res= await Network().getData3('/order');
+      }else{
+        res= await Network().getData3('/order?page=$page');
+
+      }
       if (res != 'error'){
         var body = json.decode(res.body)['order']['data'];
   // var body2 = json.decode(res.body)['detail'];

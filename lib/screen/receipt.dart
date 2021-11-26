@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:pos/models/order_model.dart';
+import 'package:pos/network_api/api.dart';
 import 'package:pos/provider/customer_provider.dart';
 import 'package:pos/provider/list_order_provider.dart';
 import 'package:pos/screen/customer.dart';
+import 'package:pos/screen/product/product.dart';
 import 'package:pos/screen/sale_wholosale.dart';
 import 'package:pos/screen/setting.dart';
 import 'package:provider/provider.dart';
@@ -29,14 +34,53 @@ class _ReceiptState extends State<Receipt> {
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
   bool CheckNet = false;
+
+  int  maxPage = 0;
+  var  current_page = 0;
+
+   oderPage() async {
+      final res =   await Network().getData3('/order');
+      if (res != 'error'){
+        var links = json.decode(res.body)['order']['links'];
+        //  current_page = json.decode(res.body)['order']['current_page'];
+        //  setState(() {
+        //    current_page
+        //  });
+  // var body2 = json.decode(res.body)['detail'];
+    if(res.statusCode == 200){
+      maxPage = links.length - 2;
+      
+      }
+    }
+
+  }
+  int Nnext = 0;
+setState_net(int page){
+    // setState(() {
+    // });
+      Nnext += page;
+
+      if (Nnext < 0){
+        Nnext = maxPage;
+      }else if (Nnext > maxPage){
+        Nnext = 0;
+      }
+    print(Nnext);
+       setState(() {
+           current_page= Nnext;
+         });
+    print("maxPage $maxPage");
+    Provider.of<ListOrderProvider>(context, listen: false).initListorder(Nnext);
+}
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    oderPage();
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
-    Provider.of<ListOrderProvider>(context, listen: false).initListorder();
+    Provider.of<ListOrderProvider>(context, listen: false).initListorder(0);
     Provider.of<CustomerProvider>(context, listen: false).initCustomer();
   }
 
@@ -176,6 +220,14 @@ class _ReceiptState extends State<Receipt> {
                 ),
                 ListTile(
                   onTap: () {
+                    //  Navigator.of(context).pushNamedAndRemoveUntil(Customer.RouteName, (route) => false);
+                    Navigator.of(context).pushNamed(ProductScreen.RouteName);
+                  },
+                  leading: Icon(Icons.card_travel),
+                  title: Text('รายการสินค้า'),
+                ),
+                ListTile(
+                  onTap: () {
                     Navigator.of(context).pushNamedAndRemoveUntil(
                         Setting.RouteName, (route) => false);
                   },
@@ -229,7 +281,7 @@ class _ReceiptState extends State<Receipt> {
             )),
             Padding(
               padding: const EdgeInsets.only(
-                  left: 200.0, right: 200, top: 30, bottom: 20),
+                  left: 200.0, right: 200, top: 0, bottom: 20),
               child: Center(
                 child: TextField(
                   controller: _search,
@@ -261,6 +313,7 @@ class _ReceiptState extends State<Receipt> {
                 ),
               ),
             ),
+            
             Consumer(builder:
                 (BuildContext context, ListOrderProvider listorder, Widget) {
               var data = listorder.getListorder();
@@ -317,11 +370,9 @@ class _ReceiptState extends State<Receipt> {
                               if (CheckNet == false) {
                                 _AlertNet(context);
                               } else {
-
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) =>
-                                      OrderDetail("${e.id}", e))
-                                      );
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        OrderDetail("${e.id}", e)));
                               }
                               // OrderDetail(title: );
                               // Navigator.of(context).pushNamed(OrderDetail.RoteName);
@@ -334,14 +385,22 @@ class _ReceiptState extends State<Receipt> {
                       ]),
                     )
                     .toList(),
-                // DataRow([
-                // ])
-                // listorder.getListorder().length < 1 ?
-                // Container(child: Text('ไม่พบข้อมูล'),):
-                //            sortColumnIndex: 0,
-                // sortAscending: true,
               );
             }),
+            
+            Container(child:Row(
+              crossAxisAlignment:CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(onPressed: ()=>setState_net(-1), icon: Icon(Icons.arrow_back_ios,size: 40)),
+                Container(child: 
+                current_page == 0 ?
+                Text('หน้าแรก'):
+                Text('หน้า $current_page')
+                ),
+                IconButton(onPressed: ()=>setState_net(1), icon: Icon(Icons.arrow_forward_ios,size: 40)),
+              ],
+            ) ,),
           ]),
         ),
       ),

@@ -126,7 +126,11 @@ class _CashState extends State<Cash> {
                                       builder: (context) => PaySuccess(
                                           change: body['change'].toString(),
                                           payment: 'เงินสด',
-                                          sum: sum.toString())),
+                                          sum: sum.toString(),
+                                          id:body['order'].toString(),
+                                          user_id:body['user_id'].toString(),
+                                          customer_id:body['customer_id'].toString()
+                                          )),
                                   (route) => false);
                               Provider.of<CustomerProvider>(context,
                                       listen: false)

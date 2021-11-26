@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:pos/models/order_dertail_model.dart';
 import 'package:pos/models/order_model.dart';
 import 'package:pos/network_api/api.dart';
+import 'package:pos/provider/customer_provider.dart';
+import 'package:pos/screen/receipt.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OrderDetail extends StatefulWidget {
   final String title;
@@ -15,120 +19,314 @@ class OrderDetail extends StatefulWidget {
 }
 
 class _OrderDetailState extends State<OrderDetail> {
-  Future<List<OrdreDetail>> detail(id) async {
+  List<OrdreDetail> listData = [];
+  var USER = '';
+  detail(id) async {
     List<OrdreDetail> _detail = [];
     var res = await Network().getData({'id': '$id'}, '/order/detail');
-    if (res != 'error'){
+    if (res != 'error') {
       var body = json.decode(res.body)['detail'];
-    print(body);
-    body.forEach((e) {
-      print(e);
-      OrdreDetail item = OrdreDetail(
-        e['unit'],
-        e['id'],
-        e['product_id'],
-        e['order_id'],
-        e['name'],
-        e['price'],
-        e['totol'],
-        e['qty'],
-        e['created_at'],
-      );
-      _detail.add(item);
-    });
+      // print(body);
+      body.forEach((e) {
+        // print(e);
+        OrdreDetail item = OrdreDetail(
+          e['unit'],
+          e['id'],
+          e['product_id'],
+          e['order_id'],
+          e['name'],
+          e['price'],
+          e['totol'],
+          e['qty'],
+          e['created_at'],
+        );
+        _detail.add(item);
+      });
     }
+    setState(() => listData = _detail);
+    // listData =  _detail;
     return _detail;
+  }
+
+  user_sale() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = jsonDecode(localStorage.getString('user').toString());
+    print(user['name']);
+    setState(() {
+      USER = user['name'];
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    detail('${widget.title}');
+
+    print(listData);
+    user_sale();
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("ยกเลิก"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("ยืนยัน"),
+      onPressed: () async {
+        final res = await Network().getDataEmpty('/order/${widget.order.id}');
+        if (res != 'error') {
+          var links = json.decode(res.body)['success'];
+          print(links);
+          if (links == true) {
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil(Receipt.RouteName, (route) => false);
+          }else{
+            Navigator.of(context).pop();
+          }
+        }
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("แน่ใจหรือไม่ที่ต้องการลบรายการนี้ ${widget.order.id}"),
+      content: Text("หาก ยืนยันการลบแล้วจะไม่สามารถกู้ข้อมูลกลับมาได้ !!"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title:
-            Text('ใบเสร็จที่ #${widget.title}', style: TextStyle(fontSize: 25)),
-        actions: <Widget>[
-          TextButton(
-            style: TextButton.styleFrom(
-                primary: Theme.of(context).colorScheme.onPrimary),
-            onPressed: () {},
-            child: const Text(
-              'ยกเลิกใบเสร็จ',
-              style: TextStyle(fontSize: 25),
+        appBar: AppBar(
+          title: Text('ใบเสร็จที่ #${widget.title}',
+              style: TextStyle(fontSize: 25)),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                  primary: Theme.of(context).colorScheme.onPrimary),
+              onPressed: () {
+                showAlertDialog(context);
+              },
+              child: const Text(
+                'ยกเลิกใบเสร็จ',
+                style: TextStyle(fontSize: 25),
+              ),
             ),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-                primary: Theme.of(context).colorScheme.onPrimary),
-            onPressed: () {},
-            child: const Text(
-              '',
-              style: TextStyle(fontSize: 25),
+            TextButton(
+              style: TextButton.styleFrom(
+                  primary: Theme.of(context).colorScheme.onPrimary),
+              onPressed: () {},
+              child: const Text(
+                '',
+                style: TextStyle(fontSize: 25),
+              ),
             ),
-          ),
-          // IconButton(
-          //   onPressed: (){},
-          //   icon: Icon(Icons.cancel)
-          // )
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.only(left:80.0,right:80),
-        child: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Center(
-                  child: Text(
-                    '${widget.order.net_amount}',
-                    style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              Center(
-                child: Text(
-                  'รวมทั้งหมด',
-                  style: TextStyle(fontSize: 20),
-                ),
-              ),
-              Text(
-                'แคชเชียร์: ${widget.order.user_id}',
-                style: TextStyle(fontSize: 20),
-              ),
-              Text(
-                'ลูกค้า:  ${widget.order.customer_id}',
-                style: TextStyle(fontSize: 20),
-              ),
-              Expanded(
-                child: FutureBuilder(
-                    future: detail('${widget.title}'),
-                    builder: (context, AsyncSnapshot snapshot) {
-                      if (snapshot.data != null) {
-                        return Container(
-                          child: ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              itemCount: snapshot.data.length,
-                              itemBuilder: (context, index) {
-                                return Container(
-                                  child: Text('${snapshot.data[index].name}'),
-                                );
-                              }),
-                        );
-                      } else {
-                        return Container(
-                          child: Center(
-                            child: Text('Loding...'),
-                          ),
-                        );
-                      }
-                    }),
-              )
-            ],
-          ),
+          ],
+       
         ),
-      ),
-    );
+        body: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: CustomScrollView(slivers: <Widget>[
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Center(
+                      child: Text(
+                        '${widget.order.net_amount}',
+                        style: TextStyle(
+                            fontSize: 40, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      'รวมทั้งหมด',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20, bottom: 20),
+                    child: Container(
+                        // padding: EdgeInsets.only(top: 20, bottom: 10),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            top: BorderSide(
+                                width: 2.0, color: Colors.grey.shade300),
+                            //   bottom: BorderSide(
+                            //       width: 16.0, color: Colors.lightBlue.shade900),
+                          ),
+                          // color: Colors.white,
+                        ),
+                        child: null),
+                  ),
+                  Text(
+                    'แคชเชียร์: ${USER}',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  Text(
+                    'ลูกค้า:  ${Provider.of<CustomerProvider>(context, listen: false).getName(widget.order.customer_id.toString())}',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20, bottom: 20),
+                    child: Container(
+                        // padding: EdgeInsets.only(top: 20, bottom: 10),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            top: BorderSide(
+                                width: 2.0, color: Colors.grey.shade300),
+                            //   bottom: BorderSide(
+                            //       width: 16.0, color: Colors.lightBlue.shade900),
+                          ),
+                          // color: Colors.white,
+                        ),
+                        child: null),
+                  ),
+                ],
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  if (listData.length > 1) {
+                    return Container(
+                      child: Row(
+                        children: [
+                          Container(
+                              child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('${listData[index].name}',
+                                  style: TextStyle(fontSize: 22)),
+                              Text(
+                                  '${listData[index].qty} X ${listData[index].price}',
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.grey)),
+                            ],
+                          )),
+                          Spacer(),
+                          Container(
+                              child: Column(
+                            children: [
+                              Text('', style: TextStyle(fontSize: 20)),
+                              Text('${listData[index].totol}',
+                                  style: TextStyle(fontSize: 20)),
+                            ],
+                          )),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return new Container(
+                      child: Center(child: new CircularProgressIndicator()),
+                    );
+                  }
+                },
+                childCount: listData.length,
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                Padding(
+                  padding: const EdgeInsets.only(top: 20, bottom: 20),
+                  child: Container(
+                      // padding: EdgeInsets.only(top: 20, bottom: 10),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                              width: 2.0, color: Colors.grey.shade300),
+                          //   bottom: BorderSide(
+                          //       width: 16.0, color: Colors.lightBlue.shade900),
+                        ),
+                        // color: Colors.white,
+                      ),
+                      child: null),
+                ),
+                Center(
+                  child: Text(" ( ${widget.order.status_sale} ) ",
+                      style:
+                          TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                ),
+                Container(
+                    child: Row(
+                  children: [
+                    Text("รวมทั้งหมด",
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold)),
+                    Spacer(),
+                    Text("${widget.order.net_amount}",
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold)),
+                  ],
+                )),
+                Container(
+                    child: Row(
+                  children: [
+                    Text("${widget.order.paid_by}",
+                        style: TextStyle(
+                          fontSize: 20,
+                        )),
+                    Spacer(),
+                    Text("${widget.order.cash}",
+                        style: TextStyle(
+                          fontSize: 20,
+                        )),
+                  ],
+                )),
+                Container(
+                    child: Row(
+                  children: [
+                    Text("เงินทอน",
+                        style: TextStyle(
+                          fontSize: 20,
+                        )),
+                    Spacer(),
+                    Text("${widget.order.change}",
+                        style: TextStyle(
+                          fontSize: 20,
+                        )),
+                  ],
+                )),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20, bottom: 20),
+                  child: Container(
+                      // padding: EdgeInsets.only(top: 20, bottom: 10),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                              width: 2.0, color: Colors.grey.shade300),
+                          //   bottom: BorderSide(
+                          //       width: 16.0, color: Colors.lightBlue.shade900),
+                        ),
+                        // color: Colors.white,
+                      ),
+                      child: null),
+                ),
+                Text("${widget.order.created_at}",
+                    style: TextStyle(
+                      fontSize: 20,
+                    )),
+              ]),
+            ),
+          ]),
+        ));
   }
 }

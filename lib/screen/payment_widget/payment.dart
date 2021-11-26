@@ -1,18 +1,49 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:charset_converter/charset_converter.dart';
+import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:pos/models/order_dertail_model.dart';
+import 'package:pos/network_api/api.dart';
+import 'package:pos/provider/customer_provider.dart';
+import 'package:pos/provider/printer_bluetooth.dart';
 import 'package:pos/screen/sale_wholosale.dart';
+import 'package:provider/provider.dart';
 
 class PaySuccess extends StatefulWidget {
-  const PaySuccess({ required this.change, required this.payment, required this.sum});
+  const PaySuccess({ required this.change, required this.payment, required this.sum,required this.id,required this.user_id,required this.customer_id});
   static const RouteName = '/pay';
   final String change;
    final String payment;
    final String sum;
+   final String id;
+   final String user_id;
+   final String customer_id;
+
 
   @override
   _PaySuccessState createState() => _PaySuccessState();
 }
 
 class _PaySuccessState extends State<PaySuccess> {
+ 
+  @override
+  void initState() {
+    super.initState();
+    //  detail(widget.id);
+     
+  
+  }
+ @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    Provider.of<ESC>(context, listen: false).Print(widget.id,widget.customer_id,widget.user_id);
+  // Provider.of<CustomerProvider>(context, listen: false).getName(widget.customer_id);
+  }
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(

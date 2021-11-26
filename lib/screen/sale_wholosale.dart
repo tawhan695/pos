@@ -13,6 +13,9 @@ import 'package:pos/provider/order_provider.dart';
 import 'package:pos/provider/product_provider.dart';
 import 'package:pos/screen/cash.dart';
 import 'package:pos/screen/customer.dart';
+import 'package:pos/screen/dashboard/dashboard.dart';
+import 'package:pos/screen/login.dart';
+import 'package:pos/screen/product/product.dart';
 import 'package:pos/screen/receipt.dart';
 import 'package:pos/screen/sale_widget/cart.dart';
 import 'package:pos/screen/setting.dart';
@@ -43,7 +46,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
   var Typesale = 'wholesale_price';
   var search = '';
   bool Issearch = false;
-  String URL = 'http://192.168.30.155/mtn-tawhan/public/';
+  String URL = 'https://tawhan.xyz/';
   List<CatagoryModel> _order = [];
   // @override
   // catagory  is a list
@@ -127,6 +130,8 @@ class _SaleWholosaleState extends State<SaleWholosale> {
   final _controller = TextEditingController();
   final _search = TextEditingController();
   var SUM = 0;
+  // var layout =  [[3,25],[4,18]];
+  // var selectLayout = 0;
   void showDeitDialog(id, qty) {
     _controller.text = qty.toString();
     // Create button
@@ -152,6 +157,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
         style: TextStyle(
             fontWeight: FontWeight.bold, fontSize: 35, color: Colors.orange),
       ),
+      
       content: TextFormField(
         controller: _controller,
         keyboardType: TextInputType.number,
@@ -274,8 +280,8 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                     'assets/images/5942.png',
                   ),
                 ),
-                Center(
-                  child: Text('ออกจากระบบ'),
+                Container(
+                  
                 ),
                 ListTile(
                   onTap: () {
@@ -310,13 +316,34 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                 ),
                 ListTile(
                   onTap: () {
+                    //  Navigator.of(context).pushNamedAndRemoveUntil(Customer.RouteName, (route) => false);
+                    Navigator.of(context).pushNamed(ProductScreen.RouteName);
+                  },
+                  leading: Icon(Icons.card_travel),
+                  title: Text('รายการสินค้า'),
+                ),
+                ListTile(
+                  onTap: () {
                     Navigator.of(context).pushNamedAndRemoveUntil(
                         Setting.RouteName, (route) => false);
                   },
                   leading: Icon(Icons.settings),
                   title: Text('ตั้งค่า'),
                 ),
+                 ListTile(
+                   leading: Icon(Icons.logout),
+                    onTap: () async {
+                     var stt = await Network().logOut();
+                     print('stt $stt');
+                     if(stt == true) {
+Navigator.of(context).pushNamedAndRemoveUntil(
+                        Login.RouteName, (route) => false);
+                     }
+                    },
+                    title: Text('ออกจากระบบ')
+                  ),
                 Spacer(),
+               
                 DefaultTextStyle(
                   style: TextStyle(
                     fontSize: 12,
@@ -326,7 +353,11 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                     margin: const EdgeInsets.symmetric(
                       vertical: 16.0,
                     ),
-                    child: Text('Terms of Service | Privacy Policy'),
+                    child: Column(
+                      children: [
+                        Text('Terms of Service | Privacy Policy'),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -337,6 +368,35 @@ class _SaleWholosaleState extends State<SaleWholosale> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Tawhan POS ( มัทนาไข่สด )'),
+           actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                  primary: Theme.of(context).colorScheme.onPrimary),
+              onPressed: () {
+                // showAlertDialog(context);
+                Navigator.of(context).pushNamed(DashboardScreen.RouteName);
+              },
+              child:  Row(
+                children: [
+                  Icon(Icons.dashboard_customize_outlined),
+                  Container(margin: EdgeInsets.all(5),),
+                  Text(
+                    'รายงาน',
+                    style: TextStyle(fontSize: 25),
+                  ),
+                ],
+              ),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                  primary: Theme.of(context).colorScheme.onPrimary),
+              onPressed: () {},
+              child: const Text(
+                '',
+                style: TextStyle(fontSize: 25),
+              ),
+            ),
+          ],
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
@@ -525,15 +585,20 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: <Widget>[
-                                                    Text(
-                                                      'ทั้งหมด',
-                                                      style: TextStyle(
-                                                          fontSize: 20,
-                                                          color: (isActive == 0)
-                                                              ? Colors.white
-                                                              : Colors.black,
-                                                          fontWeight:
-                                                              FontWeight.bold),
+                                                    Padding(
+                                                      padding: const EdgeInsets.only(top:8.0),
+                                                      child: Center(
+                                                        child: Text(
+                                                          'ทั้งหมด',
+                                                          style: TextStyle(
+                                                              fontSize: 20,
+                                                              color: (isActive == 0)
+                                                                  ? Colors.white
+                                                                  : Colors.black,
+                                                              fontWeight:
+                                                                  FontWeight.bold),
+                                                        ),
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -580,16 +645,25 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: <Widget>[
-                                                  Text(
-                                                    snapshot.data[index].name,
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        color:
-                                                            (isActive == index)
-                                                                ? Colors.white
-                                                                : Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.bold),
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(top:8.0),
+                                                    child: Center(
+                                                      
+                                                      child: Text(
+                                                        snapshot.data[index].name.length > 15?
+                                                        snapshot.data[index].name.substring(0,10)+'..':
+                                                        snapshot.data[index].name,
+                                                        
+                                                        style: TextStyle(
+                                                            fontSize: 18,
+                                                            color:
+                                                                (isActive == index)
+                                                                    ? Colors.white
+                                                                    : Colors.black,
+                                                            fontWeight:
+                                                                FontWeight.bold),
+                                                      ),
+                                                    ),
                                                   ),
                                                 ],
                                               ),
@@ -608,6 +682,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                 }
                               },
                             ),
+                          
                           ],
                         ),
                       ),
@@ -744,33 +819,35 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                                     0
                                                                 ? Text(
                                                                     snapshot.data[index].name.length >
-                                                                            14
+                                                                            30
                                                                         ? snapshot.data[index].name.substring(0,
-                                                                                14) +
-                                                                            '...'
+                                                                                30) +
+                                                                            '..'
                                                                         : snapshot
                                                                             .data[index]
                                                                             .name,
                                                                     style: const TextStyle(
                                                                         fontSize:
-                                                                            16,
+                                                                            20,
                                                                         fontWeight:
-                                                                            FontWeight.bold),
+                                                                            FontWeight.bold,
+                                                                            color: Colors.black87
+                                                                            ),
                                                                   )
                                                                 : Text(
                                                                     snapshot.data[index].name.length >
-                                                                            14
+                                                                            30
                                                                         ? snapshot.data[index].name.substring(0,
-                                                                                14) +
-                                                                            '...'
+                                                                                30) +
+                                                                            '..'
                                                                         : snapshot
                                                                             .data[index]
                                                                             .name,
                                                                     style: const TextStyle(
                                                                         fontSize:
-                                                                            16,
+                                                                            20,
                                                                         fontWeight:
-                                                                            FontWeight.bold),
+                                                                            FontWeight.bold,color: Colors.black87),
                                                                   ),
                                                           ),
                                                           Container(
@@ -840,6 +917,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                 );
                               }
                             }),
+                      
                       ),
                     ),
 
@@ -1018,10 +1096,10 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                                       .topRight,
                                                               child: Text(
                                                                 data.name.length >
-                                                                        20
+                                                                        18
                                                                     ? data.name.substring(
                                                                             0,
-                                                                            20) +
+                                                                            18) +
                                                                         '...'
                                                                     : data.name,
                                                                 style: TextStyle(

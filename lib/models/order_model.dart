@@ -1,13 +1,13 @@
 class ListOrder_model{
   var id;
-  var cash_totol;
-  var cash;
-  var discount;
-  var net_amount;
-  var change;
+  var cash_totol; // ราคารวม
+  var cash;  // เงินสด
+  var discount; // ลส่วนลด
+  var net_amount; // ยอดสุดทิ
+  var change; //เงินทอน
   var status;
   var status_sale;
-  var paid_by;
+  var paid_by;  // ชำระโดย
   var user_id;
   var customer_id;
   var branch_id;

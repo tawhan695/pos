@@ -1,0 +1,530 @@
+   Uint8List encThai1 =
+        await CharsetConverter.encode('Big5', '1สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai2 = await CharsetConverter.encode(
+        'Big5-HKSCS', '2สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai3 = await CharsetConverter.encode(
+        'BOCU-1', '3สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai4 = await CharsetConverter.encode(
+        'CESU-8', '4สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai5 = await CharsetConverter.encode(
+        'cp1363', '5สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai6 =
+        await CharsetConverter.encode('cp851', '6สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai7 = await CharsetConverter.encode(
+        'EUC-JP', '7สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai8 = await CharsetConverter.encode(
+        'EUC-KR', '8สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai9 = await CharsetConverter.encode(
+        'GB18030', '9สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai10 =
+        await CharsetConverter.encode('GBK', '10สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai11 = await CharsetConverter.encode(
+        'hp-roman8', '11สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai12 = await CharsetConverter.encode(
+        'HZ-GB-2312', '12สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai13 = await CharsetConverter.encode(
+        'IBM-Thai', '13สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai14 = await CharsetConverter.encode(
+        'IBM00858', '14สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai15 = await CharsetConverter.encode(
+        'IBM01140', '15สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai16 = await CharsetConverter.encode(
+        'IBM01141', '16สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai17 = await CharsetConverter.encode(
+        'IBM01142', '17สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai18 = await CharsetConverter.encode(
+        'IBM01143', 'สวั18วสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai19 = await CharsetConverter.encode(
+        'IBM01144', 'สวัวส19ดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai20 = await CharsetConverter.encode(
+        'IBM01145', 'สวัวสดีนี้20คือการทดสอบภาษาไทย');
+    Uint8List encThai21 = await CharsetConverter.encode(
+        'IBM01146', 'สวัวสดีนี้คือ21การทดสอบภาษาไทย');
+    Uint8List encThai22 = await CharsetConverter.encode(
+        'IBM01147', 'สวัวสดีนี้คือกา22รทดสอบภาษาไทย');
+    Uint8List encThai23 = await CharsetConverter.encode(
+        'IBM01148', 'สวัวสดีนี้คือการท23ดสอบภาษาไทย');
+    Uint8List encThai24 = await CharsetConverter.encode(
+        'IBM01149', 'สวัวสดีนี้คือการทดส24อบภาษาไทย');
+    Uint8List encThai25 = await CharsetConverter.encode(
+        'IBM037', 'สวัวสดีนี้คือการทดสอบภา25ษาไทย');
+    Uint8List encThai26 = await CharsetConverter.encode(
+        'IBM1026', 'สวัวสดีนี้คือการทดสอบภาษ26าไทย');
+    Uint8List encThai27 = await CharsetConverter.encode(
+        'IBM1047', 'สวัวสดีนี้คือการทดสอบภาษาไ27ทย');
+    Uint8List encThai28 = await CharsetConverter.encode(
+        'IBM273', 'สวัวสดีนี้คือการทดสอบภาษาไทย28');
+    Uint8List encThai29 = await CharsetConverter.encode(
+        'IBM277', 'สวัวสดีนี้คือการทดสอบภาษาไทย29');
+    Uint8List encThai30 = await CharsetConverter.encode(
+        'IBM278', 'สวัวสดีนี้คือการทดสอบภาษาไทย32');
+    Uint8List encThai31 = await CharsetConverter.encode(
+        'IBM280', '31สวัวสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai32 = await CharsetConverter.encode(
+        'IBM284', 'สวั32วสดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai33 = await CharsetConverter.encode(
+        'IBM285', 'สวัว33สดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai34 = await CharsetConverter.encode(
+        'IBM290', 'สวัวส34ดีนี้คือการทดสอบภาษาไทย');
+    Uint8List encThai35 = await CharsetConverter.encode(
+        'IBM297', 'สวัวสดีนี้35คือการทดสอบภาษาไทย');
+    Uint8List encThai36 = await CharsetConverter.encode(
+        'IBM420', 'สวัวสดีนี้คือ36การทดสอบภาษาไทย');
+    Uint8List encThai37 = await CharsetConverter.encode(
+        'IBM424', 'สวัวสดีนี้คือกา37รทดสอบภาษาไทย');
+    Uint8List encThai38 = await CharsetConverter.encode(
+        'IBM437', 'สวัวสดีนี้คือการท38ดสอบภาษาไทย');
+    Uint8List encThai39 = await CharsetConverter.encode(
+        'IBM500', 'สวัวสดีนี้คือการทดส39อบภาษาไทย');
+    Uint8List encThai50 = await CharsetConverter.encode(
+        'IBM775', 'สวัวสดีนี้คือการทดสอบ40ภาษาไทย');
+    Uint8List encThai51 = await CharsetConverter.encode(
+        'IBM850', 'สวัวสดีนี้คือการทดสอบภ41าษาไทย');
+    Uint8List encThai52 = await CharsetConverter.encode(
+        'IBM852', 'สวัวสดีนี้คือการทดสอบภา42ษาไทย');
+    Uint8List encThai53 = await CharsetConverter.encode(
+        'IBM855', 'สวัวสดีนี้คือการทดสอบภาษา43ไทย');
+    Uint8List encThai54 = await CharsetConverter.encode(
+        'IBM857', 'สวัวสดีนี้คือการทดสอบภาษา44ไทย');
+    Uint8List encThai55 = await CharsetConverter.encode(
+        'IBM860', 'สวัวสดีนี้คือการทดสอบภาษ45าไทย');
+    Uint8List encThai56 = await CharsetConverter.encode(
+        'IBM861', 'สวัวสดีนี้คือการทดสอบภาษาไ46ทย');
+    Uint8List encThai57 = await CharsetConverter.encode(
+        'IBM862', 'สวัวสดีนี้คือการทดสอบภาษา47ไทย');
+    Uint8List encThai58 = await CharsetConverter.encode(
+        'IBM863', 'สวัวสดีนี้คือการทดสอบภาษาไ48ทย');
+    Uint8List encThai59 = await CharsetConverter.encode(
+        'IBM864', 'สวัวสดีนี้คือการทดสอบภาษา49ไทย');
+    Uint8List encThai60 = await CharsetConverter.encode(
+        'IBM865', 'สวัวสดีนี้คือการทดสอบภาษา50ไทย');
+    Uint8List encThai61 = await CharsetConverter.encode(
+        'IBM866', 'สวัวสดีนี้คือการทดสอบภาษาไ51ทย');
+    Uint8List encThai62 = await CharsetConverter.encode(
+        'IBM868', 'สวัวสดีนี้คือการทดสอบภาษาไ52ทย');
+    Uint8List encThai63 = await CharsetConverter.encode(
+        'IBM869', 'สวัวสดีนี้คือการทดสอบภาษ53าไทย');
+    Uint8List encThai64 = await CharsetConverter.encode(
+        'IBM870', 'สวัวสดีนี้คือการทดสอบภาษ54าไทย');
+    Uint8List encThai65 = await CharsetConverter.encode(
+        'IBM871', 'สวัวสดีนี้คือการทดสอบภาษาไ55ทย');
+    Uint8List encThai66 = await CharsetConverter.encode(
+        'IBM918', 'สวัวสดีนี้คือการทดสอบภาษ56าไทย');
+    Uint8List encThai67 = await CharsetConverter.encode(
+        'ISO-2022-CN', 'สวัวสดีนี้คือการทด57สอบภาษาไทย');
+    Uint8List encThai68 = await CharsetConverter.encode(
+        'ISO-2022-CN-EXT', 'สวัวสดีนี้คือการ58ทดสอบภาษาไทย');
+    Uint8List encThai69 = await CharsetConverter.encode(
+        'ISO-2022-JP', 'สวัวสดีนี้คือการทดสอบ59ภาษาไทย');
+    Uint8List encThai80 = await CharsetConverter.encode(
+        'ISO-2022-JP-1', 'สวัวสดีนี้คือการทดส60อบภาษาไทย');
+    Uint8List encThai81 = await CharsetConverter.encode(
+        'ISO-2022-JP-2', 'สวัวสดีนี้คือการทดสอ61บภาษาไทย');
+    Uint8List encThai82 = await CharsetConverter.encode(
+        'ISO-2022-KR', 'สวัวสดีนี้คือการทดสอบภา62ษาไทย');
+    Uint8List encThai83 = await CharsetConverter.encode(
+        'ISO-8859-1', 'สวัวสดีนี้คือการทดสอบภาษาไ63ทย');
+    Uint8List encThai84 = await CharsetConverter.encode(
+        'ISO-8859-10', 'สวัวสดีนี้คือการทดสอบภาษา64ไทย');
+    Uint8List encThai85 = await CharsetConverter.encode(
+        'ISO-8859-13', 'สวัวสดีนี้คือการทดสอบภา65ษาไทย');
+    Uint8List encThai86 = await CharsetConverter.encode(
+        'ISO-8859-14', 'สวัวสดีนี้คือการทดสอบภาษ66าไทย');
+    Uint8List encThai87 = await CharsetConverter.encode(
+        'ISO-8859-15', 'สวัวสดีนี้คือการทดสอบภาษา67ไทย');
+    Uint8List encThai88 = await CharsetConverter.encode(
+        'ISO-8859-2', 'สวัวสดีนี้คือการทดสอบภาษาไท68ย');
+    Uint8List encThai89 = await CharsetConverter.encode(
+        'ISO-8859-3', 'สวัวสดีนี้คือการทดสอบภาษาไ69ทย');
+    Uint8List encThai90 = await CharsetConverter.encode(
+        'ISO-8859-4', 'สวัวสดีนี้คือการทดสอบภาษา70ไทย');
+    Uint8List encThai91 = await CharsetConverter.encode(
+        'ISO-8859-5', 'สวัวสดีนี้คือการทดสอบภาษา71ไทย');
+    Uint8List encThai92 = await CharsetConverter.encode(
+        'ISO-8859-6', 'สวัวสดีนี้คือการทดสอบภาษาไ72ทย');
+    Uint8List encThai93 = await CharsetConverter.encode(
+        'ISO-8859-7', 'สวัวสดีนี้คือการทดสอบภาษาไท73ย');
+    Uint8List encThai94 = await CharsetConverter.encode(
+        'ISO-8859-8', 'สวัวสดีนี้คือการทดสอบภาษาไ74ทย');
+    Uint8List encThai95 = await CharsetConverter.encode(
+        'ISO-8859-9', 'สวัวสดีนี้คือการทดสอบภาษาไท75ย');
+    Uint8List encThai96 = await CharsetConverter.encode(
+        'KOI8-R', 'สวัวสดีนี้คือการทดสอบภาษาไ76ทย');
+    Uint8List encThai97 = await CharsetConverter.encode(
+        'KOI8-U', 'สวัวสดีนี้คือการทดสอบภาษา77ไทย');
+    Uint8List encThai98 = await CharsetConverter.encode(
+        'macintosh', 'สวัวสดีนี้คือการทดสอบภา78ษาไทย');
+    Uint8List encThai99 =
+        await CharsetConverter.encode('SCSU', 'สวัวสดีนี้คือการทดสอบภาษาไท79ย');
+    Uint8List encThai100 = await CharsetConverter.encode(
+        'Shift_JIS', 'สวัวสดีนี้คือการทดสอบภา80ษาไทย');
+    Uint8List encThai41 = await CharsetConverter.encode(
+        'TIS-620', 'สวัวสดีนี้คือการทดสอบภาษา81ไทย');
+    Uint8List encThai42 = await CharsetConverter.encode(
+        'US-ASCII', 'สวัวสดีนี้คือการทดสอบภา82ษาไทย');
+    Uint8List encThai43 = await CharsetConverter.encode(
+        'UTF-16', 'สวัวสดีนี้คือการทดสอบภาษา83ไทย');
+    Uint8List encThai44 = await CharsetConverter.encode(
+        'UTF-16BE', 'สวัวสดีนี้คือการทดสอบภาษ84าไทย');
+    Uint8List encThai45 = await CharsetConverter.encode(
+        'UTF-16LE', 'สวัวสดีนี้คือการทดสอบภาษา85ไทย');
+    Uint8List encThai46 = await CharsetConverter.encode(
+        'UTF-32', 'สวัวสดีนี้คือการทดสอบภาษา86ไทย');
+    Uint8List encThai47 = await CharsetConverter.encode(
+        'UTF-32BE', 'สวัวสดีนี้คือการทดสอบภาษ87าไทย');
+    Uint8List encThai48 = await CharsetConverter.encode(
+        'UTF-32LE', 'สวัวสดีนี้คือการทดสอบภาษา88ไทย');
+    Uint8List encThai49 = await CharsetConverter.encode(
+        'UTF-7', 'สวัวสดีนี้คือการทดสอบภาษาไ89ทย');
+    Uint8List encThai70 = await CharsetConverter.encode(
+        'UTF-8', 'สวัวสดีนี้คือการทดสอบภาษา90ไทย');
+    Uint8List encThai71 = await CharsetConverter.encode(
+        'windows-1250', 'สวัวสดีนี้คือการทดส91อบภาษาไทย');
+    Uint8List encThai72 = await CharsetConverter.encode(
+        'windows-1251', 'สวัวสดีนี้คือการทดสอ92บภาษาไทย');
+    Uint8List encThai73 = await CharsetConverter.encode(
+        'windows-1252', 'สวัวสดีนี้คือการทดสอบ93ภาษาไทย');
+    Uint8List encThai74 = await CharsetConverter.encode(
+        'windows-1253', 'สวัวสดีนี้คือการทดสอบภา94ษาไทย');
+    Uint8List encThai75 = await CharsetConverter.encode(
+        'windows-1254', 'สวัวสดีนี้คือการทดสอบภาษา95ไทย');
+    Uint8List encThai76 = await CharsetConverter.encode(
+        'windows-1255', 'สวัวสดีนี้คือการทดสอบภาษาไ96ทย');
+    Uint8List encThai77 = await CharsetConverter.encode(
+        'windows-1256', 'สวัวสดีนี้คือการทดสอบภาษาไท97ย');
+    Uint8List encThai78 = await CharsetConverter.encode(
+        'windows-1257', 'สวัวสดีนี้คือการทดสอบภาษา98ไทย');
+    Uint8List encThai79 = await CharsetConverter.encode(
+        'windows-1258', 'สวัวสดีนี้คือการทดสอบภาษา99ไทย');
+// //  Uint8List encThai40 = await CharsetConverter.encode('x-compound-te', 'สวัวสดีนี้คือการทดสอบภาษาไทย');
+
+    bytes += ticket.textEncoded(encThai1);
+    bytes += ticket.textEncoded(encThai2);
+    bytes += ticket.textEncoded(encThai3);
+    bytes += ticket.textEncoded(encThai4);
+    bytes += ticket.textEncoded(encThai5);
+    bytes += ticket.textEncoded(encThai6);
+    bytes += ticket.textEncoded(encThai7);
+    bytes += ticket.textEncoded(encThai8);
+    bytes += ticket.textEncoded(encThai9);
+    bytes += ticket.textEncoded(encThai10);
+
+    bytes += ticket.textEncoded(encThai21);
+    bytes += ticket.textEncoded(encThai22);
+    bytes += ticket.textEncoded(encThai23);
+    bytes += ticket.textEncoded(encThai24);
+    bytes += ticket.textEncoded(encThai25);
+    bytes += ticket.textEncoded(encThai26);
+    bytes += ticket.textEncoded(encThai27);
+    bytes += ticket.textEncoded(encThai28);
+    bytes += ticket.textEncoded(encThai29);
+    bytes += ticket.textEncoded(encThai20);
+
+    bytes += ticket.textEncoded(encThai31);
+    bytes += ticket.textEncoded(encThai32);
+    bytes += ticket.textEncoded(encThai33);
+    bytes += ticket.textEncoded(encThai34);
+    bytes += ticket.textEncoded(encThai35);
+    bytes += ticket.textEncoded(encThai36);
+    bytes += ticket.textEncoded(encThai37);
+    bytes += ticket.textEncoded(encThai38);
+    bytes += ticket.textEncoded(encThai39);
+    bytes += ticket.textEncoded(encThai30);
+
+    bytes += ticket.textEncoded(encThai41);
+    bytes += ticket.textEncoded(encThai42);
+    bytes += ticket.textEncoded(encThai43);
+    bytes += ticket.textEncoded(encThai44);
+    bytes += ticket.textEncoded(encThai45);
+    bytes += ticket.textEncoded(encThai46);
+    bytes += ticket.textEncoded(encThai47);
+    bytes += ticket.textEncoded(encThai48);
+    bytes += ticket.textEncoded(encThai49);
+//  bytes +=ticket.textEncoded(encThai40);
+
+    bytes += ticket.textEncoded(encThai51);
+    bytes += ticket.textEncoded(encThai52);
+    bytes += ticket.textEncoded(encThai53);
+    bytes += ticket.textEncoded(encThai54);
+    bytes += ticket.textEncoded(encThai55);
+    bytes += ticket.textEncoded(encThai56);
+    bytes += ticket.textEncoded(encThai57);
+    bytes += ticket.textEncoded(encThai58);
+    bytes += ticket.textEncoded(encThai59);
+    bytes += ticket.textEncoded(encThai50);
+
+    bytes += ticket.textEncoded(encThai61);
+    bytes += ticket.textEncoded(encThai62);
+    bytes += ticket.textEncoded(encThai63);
+    bytes += ticket.textEncoded(encThai64);
+    bytes += ticket.textEncoded(encThai65);
+    bytes += ticket.textEncoded(encThai66);
+    bytes += ticket.textEncoded(encThai67);
+    bytes += ticket.textEncoded(encThai68);
+    bytes += ticket.textEncoded(encThai69);
+    bytes += ticket.textEncoded(encThai60);
+
+    bytes += ticket.textEncoded(encThai71);
+    bytes += ticket.textEncoded(encThai72);
+    bytes += ticket.textEncoded(encThai73);
+    bytes += ticket.textEncoded(encThai74);
+    bytes += ticket.textEncoded(encThai75);
+    bytes += ticket.textEncoded(encThai76);
+    bytes += ticket.textEncoded(encThai77);
+    bytes += ticket.textEncoded(encThai78);
+    bytes += ticket.textEncoded(encThai79);
+    bytes += ticket.textEncoded(encThai70);
+
+    bytes += ticket.textEncoded(encThai81);
+    bytes += ticket.textEncoded(encThai82);
+    bytes += ticket.textEncoded(encThai83);
+    bytes += ticket.textEncoded(encThai84);
+    bytes += ticket.textEncoded(encThai85);
+    bytes += ticket.textEncoded(encThai86);
+    bytes += ticket.textEncoded(encThai87);
+    bytes += ticket.textEncoded(encThai88);
+    bytes += ticket.textEncoded(encThai89);
+    bytes += ticket.textEncoded(encThai80);
+
+    bytes += ticket.textEncoded(encThai91);
+    bytes += ticket.textEncoded(encThai92);
+    bytes += ticket.textEncoded(encThai93);
+    bytes += ticket.textEncoded(encThai94);
+    bytes += ticket.textEncoded(encThai95);
+    bytes += ticket.textEncoded(encThai96);
+    bytes += ticket.textEncoded(encThai97);
+    bytes += ticket.textEncoded(encThai98);
+    bytes += ticket.textEncoded(encThai99);
+    bytes += ticket.textEncoded(encThai90);
+    bytes += ticket.textEncoded(encThai100);
+
+    ticket.feed(2);
+    ticket.cut();
+    return bytes;
+
+    // Print image  logo
+    // final ByteData data = await rootBundle.load('assets/images/logo.png');
+    // final Uint8List buf = data.buffer.asUint8List();
+    // final Image image = decodeImage(buf)!;
+    // bytes += generator.image(image);
+    // bytes += generator.imageRaster(image, imageFn: PosImageFn.graphics);
+    //ชื่อร้าน สาขา
+    Uint8List et1 =
+        await CharsetConverter.encode('TIS-620', 'มัทนาไข่สด(สาขา2)');
+    bytes += generator.textEncoded(et1,
+        // styles: PosStyles(bold: true, align: PosAlign.center)
+        );
+    // รายละเอียดร้าน
+    Uint8List et2 = await CharsetConverter.encode('TIS-620',
+        'หจก.มัทนาไข่สด ฟาร์ม (สาขา2) ที่อยู่ 260/8 บ.หนองเม็ก ต.นาหัวบ่อ อ.พรรณานิคม จ.สกลนคร 47220 เปิดให้บริการทุกวัน จันทร์ - อาทิตย์ วลา 08.00 - 18.00 น.');
+    bytes += generator.textEncoded(et2,
+        styles: PosStyles(align: PosAlign.center)); //ชื่อร้าน สาขา
+    bytes += generator.feed(2);
+    // Uint8List et3 = await CharsetConverter.encode('TIS-620', 'ใบเสร็จ/สินค้า');
+    // bytes += generator.textEncoded(et3,
+    //     styles: PosStyles(align: PosAlign.center)); //ชื่อร้าน สาขา
+
+    // bytes += generator.hr();
+    // Uint8List etc1 = await CharsetConverter.encode('TIS-620', 'จำนวน');
+    // Uint8List etc2 = await CharsetConverter.encode('TIS-620', 'สินค้า');
+    // Uint8List etc3 = await CharsetConverter.encode('TIS-620', 'ราคา');
+    // Uint8List etc4 = await CharsetConverter.encode('TIS-620', 'ราคา');
+    // bytes += generator.row([
+    //   PosColumn(
+    //     textEncoded: etc1,
+    //     width: 3,
+    //     styles: PosStyles(align: PosAlign.left, underline: true),
+    //   ),
+    //   PosColumn(
+    //     textEncoded: etc2,
+    //     width: 3,
+    //     styles: PosStyles(align: PosAlign.right, underline: true),
+    //   ),
+    //   PosColumn(
+    //     textEncoded: etc3,
+    //     width: 3,
+    //     styles: PosStyles(align: PosAlign.right, underline: true),
+    //   ),
+    //   PosColumn(
+    //     textEncoded: etc4,
+    //     width: 3,
+    //     styles: PosStyles(align: PosAlign.right, underline: true),
+    //   ),
+    // ]);
+    // Uint8List etr1 = await CharsetConverter.encode('TIS-620', 'จำนวน');
+    // Uint8List etr2 = await CharsetConverter.encode('TIS-620', 'สินค้า');
+    // Uint8List etr3 = await CharsetConverter.encode('TIS-620', 'ราคา');
+    // Uint8List etr4 = await CharsetConverter.encode('TIS-620', 'ราคา');
+    // bytes += generator.row([
+    //   PosColumn(
+    //     textEncoded: etr1,
+    //     width: 3,
+    //     styles: PosStyles(align: PosAlign.left, underline: true),
+    //   ),
+    //   PosColumn(
+    //     textEncoded: etr2,
+    //     width: 3,
+    //     styles: PosStyles(align: PosAlign.right, underline: true),
+    //   ),
+    //   PosColumn(
+    //     textEncoded: etr3,
+    //     width: 3,
+    //     styles: PosStyles(align: PosAlign.right, underline: true),
+    //   ),
+    //   PosColumn(
+    //     textEncoded: etr4,
+    //     width: 3,
+    //     styles: PosStyles(align: PosAlign.right, underline: true),
+    //   ),
+    // ]);
+    // bytes += generator.hr();
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'รวม ฿0.00'),
+    //     styles: PosStyles(bold: true, align: PosAlign.right));
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'สวนลด ฿0.00'),
+    //     styles: PosStyles(align: PosAlign.right));
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'ยอดสุทธิ ฿0.00'),
+    //     styles: PosStyles(align: PosAlign.right));
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'รับเงินสด ฿0.00'),
+    //     styles: PosStyles(align: PosAlign.right));
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'เงินทอน ฿0.00'),
+    //     styles: PosStyles(align: PosAlign.right));
+
+    // bytes += generator.feed(1);
+    // bytes += generator.hr();
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'พนักงานขาย : ตาหวาน สตูดิโอ'),
+    //     styles: PosStyles(align: PosAlign.center));
+    // final now = DateTime.now();
+    // final formatter = DateFormat('MM/dd/yyyy H:m');
+    // final String timestamp = formatter.format(now);
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'วันเวลา : $timestamp'),
+    //     styles: PosStyles(align: PosAlign.center));
+    // bytes += generator.feed(2);
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'ขอบพระคุณที่มาอุดหนุนนะคะ'),
+    //     styles: PosStyles(align: PosAlign.center));
+    generator.feed(2);
+    generator.cut();
+    return bytes;
+  }
+
+  Future<List<int>> testTicket(
+      PaperSize paper, CapabilityProfile profile) async {
+    final Generator generator = Generator(paper, profile);
+    // Uint8List encThai41 = await CharsetConverter.encode('TIS-620', 'สวัวสดีนี้คือการทดสอบภาษา81ไทย');
+    List<int> bytes = [];
+    // Print image  logo
+    // final ByteData data = await rootBundle.load('assets/images/logo.png');
+    // final Uint8List buf = data.buffer.asUint8List();
+    // final Image image = decodeImage(buf)!;
+    // bytes += generator.image(image);
+    // bytes += generator.imageRaster(image, imageFn: PosImageFn.graphics);
+    //ชื่อร้าน สาขา
+    Uint8List et1 =
+        await CharsetConverter.encode('TIS-620', 'มัทนาไข่สด(สาขา2)');
+    bytes += generator.textEncoded(et1,
+        styles: PosStyles(bold: true, align: PosAlign.center));
+    // รายละเอียดร้าน
+    Uint8List et2 = await CharsetConverter.encode('TIS-620',
+        'หจก.มัทนาไข่สด ฟาร์ม (สาขา2) ที่อยู่ 260/8 บ.หนองเม็ก ต.นาหัวบ่อ อ.พรรณานิคม จ.สกลนคร 47220 เปิดให้บริการทุกวัน จันทร์ - อาทิตย์ วลา 08.00 - 18.00 น.');
+    bytes += generator.textEncoded(et2,
+        styles: PosStyles(align: PosAlign.center)); //ชื่อร้าน สาขา
+    bytes += generator.feed(2);
+    Uint8List et3 = await CharsetConverter.encode('TIS-620', 'ใบเสร็จ/สินค้า');
+    bytes += generator.textEncoded(et3,
+        styles: PosStyles(align: PosAlign.center)); //ชื่อร้าน สาขา
+
+    bytes += generator.hr();
+    Uint8List etc1 = await CharsetConverter.encode('TIS-620', 'จำนวน');
+    Uint8List etc2 = await CharsetConverter.encode('TIS-620', 'สินค้า');
+    Uint8List etc3 = await CharsetConverter.encode('TIS-620', 'ราคา');
+    Uint8List etc4 = await CharsetConverter.encode('TIS-620', 'ราคา');
+    bytes += generator.row([
+      PosColumn(
+        textEncoded: etc1,
+        width: 3,
+        styles: PosStyles(align: PosAlign.left, underline: true),
+      ),
+      PosColumn(
+        textEncoded: etc2,
+        width: 3,
+        styles: PosStyles(align: PosAlign.right, underline: true),
+      ),
+      PosColumn(
+        textEncoded: etc3,
+        width: 3,
+        styles: PosStyles(align: PosAlign.right, underline: true),
+      ),
+      PosColumn(
+        textEncoded: etc4,
+        width: 3,
+        styles: PosStyles(align: PosAlign.right, underline: true),
+      ),
+    ]);
+    Uint8List etr1 = await CharsetConverter.encode('TIS-620', 'จำนวน');
+    Uint8List etr2 = await CharsetConverter.encode('TIS-620', 'สินค้า');
+    Uint8List etr3 = await CharsetConverter.encode('TIS-620', 'ราคา');
+    Uint8List etr4 = await CharsetConverter.encode('TIS-620', 'ราคา');
+    bytes += generator.row([
+      PosColumn(
+        textEncoded: etr1,
+        width: 3,
+        styles: PosStyles(align: PosAlign.left, underline: true),
+      ),
+      PosColumn(
+        textEncoded: etr2,
+        width: 3,
+        styles: PosStyles(align: PosAlign.right, underline: true),
+      ),
+      PosColumn(
+        textEncoded: etr3,
+        width: 3,
+        styles: PosStyles(align: PosAlign.right, underline: true),
+      ),
+      PosColumn(
+        textEncoded: etr4,
+        width: 3,
+        styles: PosStyles(align: PosAlign.right, underline: true),
+      ),
+    ]);
+    // bytes += generator.hr();
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'รวม ฿0.00'),
+    //     styles: PosStyles(bold: true, align: PosAlign.right));
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'สวนลด ฿0.00'),
+    //     styles: PosStyles(align: PosAlign.right));
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'ยอดสุทธิ ฿0.00'),
+    //     styles: PosStyles(align: PosAlign.right));
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'รับเงินสด ฿0.00'),
+    //     styles: PosStyles(align: PosAlign.right));
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'เงินทอน ฿0.00'),
+    //     styles: PosStyles(align: PosAlign.right));
+
+    // bytes += generator.feed(1);
+    // bytes += generator.hr();
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'พนักงานขาย : ตาหวาน สตูดิโอ'),
+    //     styles: PosStyles(align: PosAlign.center));
+    // final now = DateTime.now();
+    // final formatter = DateFormat('MM/dd/yyyy H:m');
+    // final String timestamp = formatter.format(now);
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'วันเวลา : $timestamp'),
+    //     styles: PosStyles(align: PosAlign.center));
+    // bytes += generator.feed(2);
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'ขอบพระคุณที่มาอุดหนุนนะคะ'),
+    //     styles: PosStyles(align: PosAlign.center));
+    bytes += generator.feed(4);
+    bytes += generator.cut();
+    return bytes;

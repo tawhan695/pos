@@ -55,26 +55,48 @@ class _PromptpayState extends State<Promptpay> {
             onPressed: () async {
               print('payment>>');
               var data = {
-                'cash': Provider.of<OrderProvider>(context, listen: false).getSum().toString(),
+                'cash': Provider.of<OrderProvider>(context, listen: false)
+                    .getSum()
+                    .toString(),
                 'payid_by': 'พร้อมเพย์',
-                'customer': Provider.of<CustomerProvider>(context, listen: false).selectCustomer().length >0? Provider.of<CustomerProvider>(context, listen: false).selectCustomer()[0].phone.toString(): '0',
+                'customer':
+                    Provider.of<CustomerProvider>(context, listen: false)
+                                .selectCustomer()
+                                .length >
+                            0
+                        ? Provider.of<CustomerProvider>(context, listen: false)
+                            .selectCustomer()[0]
+                            .phone
+                            .toString()
+                        : '0',
               };
               print(data);
               final response = await Network().getData(data, '/sale');
               var body = json.decode(response.body);
-              
+
               // Navigator.of(context).pushReplacementNamed(PaySuccess.RouteName);
               // pushNamedAndRemoveUntil คำสั่งนี้ไม่มีปุ้มย้อนกลับ
               print(body);
               if (body['success']) {
-                
-               Navigator.pushAndRemoveUntil(context,  MaterialPageRoute(builder: (context) => PaySuccess(change : body['change'].toString(),payment:'เงินสด',sum:sum.toString())), (route) => false);
-               Provider.of<CustomerProvider>(context, listen: false).emtySelect();
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PaySuccess(
+                          change: body['change'].toString(),
+                          payment: 'เงินสด',
+                          sum: sum.toString(),
+                          id: body['order'].toString(),
+                          user_id: body['user_id'].toString(),
+                          customer_id: body['customer_id'].toString()),
+                    ),
+                    (route) => false);
+                Provider.of<CustomerProvider>(context, listen: false)
+                    .emtySelect();
               } else {
                 print('ไม่สำเร็จ');
               }
-            //   Navigator.of(context).pushNamedAndRemoveUntil(
-            //       PaySuccess.RouteName, (route) => false);
+              //   Navigator.of(context).pushNamedAndRemoveUntil(
+              //       PaySuccess.RouteName, (route) => false);
             },
             //  icon: Icon(Icons.attach_money_rounded),
 

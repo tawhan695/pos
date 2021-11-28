@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class OrderProvider with ChangeNotifier {
      return httpE429;
   }
   addCart(sku) async {
+    sleep(const Duration(milliseconds: 100)); // ดีเลเพื่อไม่ให้ส่งรีเคสเร็วเกินไป
     await Network().getData({'sku': '$sku'}, '/cart');
     await initCart();
     // print('Init Cart ... ok');

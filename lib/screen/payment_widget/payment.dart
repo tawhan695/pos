@@ -11,6 +11,7 @@ import 'package:pos/provider/customer_provider.dart';
 import 'package:pos/provider/printer_bluetooth.dart';
 import 'package:pos/screen/sale_wholosale.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PaySuccess extends StatefulWidget {
   const PaySuccess({ required this.change, required this.payment, required this.sum,required this.id,required this.user_id,required this.customer_id});
@@ -28,19 +29,42 @@ class PaySuccess extends StatefulWidget {
 }
 
 class _PaySuccessState extends State<PaySuccess> {
+//   List Branches = []; 
+//  getBranch() async { 
+//    SharedPreferences localStorage = await SharedPreferences.getInstance();
+//    var branch = jsonDecode(localStorage.getString('branch').toString());
+   
+//   //  print(branch);
+//   //  print(branch);
+//   //  print(branch['name']);
  
+    
+//    Branches.add(branch['name']);
+//    Branches.add(branch['des']);
+//    print('11 Branches  object ${Branches}');
+  
+   
+//    return Branches ;
+//    }
   @override
   void initState() {
     super.initState();
     //  detail(widget.id);
-     
+    // print("getBranch()['name']");
+    // getBranch();
+    // print(Branches);
+     Provider.of<ESC>(context, listen: false).Print(widget.id,widget.customer_id,widget.user_id);
+    // print(branch.length);
+    // print(branch['name']);
+
+    // print(branch['name']);
   
   }
  @override
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
-    Provider.of<ESC>(context, listen: false).Print(widget.id,widget.customer_id,widget.user_id);
+   
   // Provider.of<CustomerProvider>(context, listen: false).getName(widget.customer_id);
   }
  

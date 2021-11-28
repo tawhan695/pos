@@ -45,6 +45,8 @@ class _PrintterState extends State<Printer> {
     setState(() {
       _devices_select = Provider.of<ESC>(context, listen: false).getESC();
     });
+     Provider.of<ESC>(context, listen: false)
+                    .getBranch();
   }
 
   loadPrint() async {
@@ -109,10 +111,12 @@ class _PrintterState extends State<Printer> {
         itemBuilder: (BuildContext context, int index) {
           return InkWell(
             onTap: () {
+              Navigator.pop(context);
               setState(() {
                 // _devices_select = _devices[index];
                 Provider.of<ESC>(context, listen: false)
                     .intESC(_devices[index]);
+
                 setState(() {
                   _devices_select =
                       Provider.of<ESC>(context, listen: false).getESC();
@@ -130,7 +134,7 @@ class _PrintterState extends State<Printer> {
                 Text(_devices[index].name ?? ''),
                 Text(_devices[index].address!),
                 Text(
-                  'Click to print a test receipt',
+                  'เลือกให้ตรงชื่อเครื่องปริ้นเด้อ',
                   style: TextStyle(color: Colors.grey[700]),
                 ),
               ],
@@ -162,102 +166,10 @@ class _PrintterState extends State<Printer> {
     // print(buf);
     // final Image image = decodeImage(buf)!;
     // bytes += generator.image(image);
-    bytes +=generator.textEncoded(await CharsetConverter.encode('TIS-620', 'มัทนาไข่สด(สาขา2)') ,styles: PosStyles(bold: true,align: PosAlign.center)); //ชื่อร้าน สาขา
-    bytes +=generator.textEncoded(await CharsetConverter.encode('TIS-620', 'หจก.มัทนาไข่สด ฟาร์ม (สาขา2) ที่อยู่ 260/8 บ.หนองเม็ก ต.นาหัวบ่อ อ.พรรณานิคม จ.สกลนคร 47220 เปิดให้บริการทุกวัน จันทร์ - อาทิตย์ วลา 08.00 - 18.00 น.') ,styles: PosStyles(align: PosAlign.center)); //ชื่อร้าน สาขา
     bytes += generator.hr();
-    //  bytes += generator.feed(2);
-    Uint8List et3 = await CharsetConverter.encode('TIS-620', 'ใบเสร็จ/สินค้า');
-    bytes += generator.textEncoded(et3,
-        styles: PosStyles(align: PosAlign.center)); //ชื่อร้าน สาขา
-
+    bytes +=generator.textEncoded(await CharsetConverter.encode('TIS-620', 'หจก.มัทนาไข่สด ฟาร์ม') ,styles: PosStyles(bold: true,align: PosAlign.center)); //ชื่อร้าน สาขา
     bytes += generator.hr();
-    Uint8List etc1 = await CharsetConverter.encode('TIS-620', 'จำนวน');
-    Uint8List etc2 = await CharsetConverter.encode('TIS-620', 'สินค้า');
-    Uint8List etc3 = await CharsetConverter.encode('TIS-620', 'ราคา');
-    Uint8List etc4 = await CharsetConverter.encode('TIS-620', 'ราคา');
-    bytes += generator.row([
-      PosColumn(
-        textEncoded: etc1,
-        width: 3,
-        styles: PosStyles(align: PosAlign.left, underline: true),
-      ),
-      PosColumn(
-        textEncoded: etc2,
-        width: 3,
-        styles: PosStyles(align: PosAlign.right, underline: true),
-      ),
-      PosColumn(
-        textEncoded: etc3,
-        width: 3,
-        styles: PosStyles(align: PosAlign.right, underline: true),
-      ),
-      PosColumn(
-        textEncoded: etc4,
-        width: 3,
-        styles: PosStyles(align: PosAlign.right, underline: true),
-      ),
-    ]);
-    Uint8List etr1 = await CharsetConverter.encode('TIS-620', 'จำนวน');
-    Uint8List etr2 = await CharsetConverter.encode('TIS-620', 'สินค้า');
-    Uint8List etr3 = await CharsetConverter.encode('TIS-620', 'ราคา');
-    Uint8List etr4 = await CharsetConverter.encode('TIS-620', 'ราคา');
-    bytes += generator.row([
-      PosColumn(
-        textEncoded: etr1,
-        width: 1,
-        styles: PosStyles(align: PosAlign.left, underline: true),
-      ),
-      PosColumn(
-        textEncoded: etr2,
-        width: 5,
-        styles: PosStyles(align: PosAlign.right, underline: true),
-      ),
-      PosColumn(
-        textEncoded: etr3,
-        width: 3,
-        styles: PosStyles(align: PosAlign.right, underline: true),
-      ),
-      PosColumn(
-        textEncoded: etr4,
-        width: 3,
-        styles: PosStyles(align: PosAlign.right, underline: true),
-      ),
-    ]);
- bytes += generator.hr();
-    bytes += generator.textEncoded(
-        await CharsetConverter.encode('TIS-620', 'รวม ฿0.00'),
-        styles: PosStyles(bold: true, align: PosAlign.right));
-    bytes += generator.textEncoded(
-        await CharsetConverter.encode('TIS-620', 'สวนลด ฿0.00'),
-        styles: PosStyles(align: PosAlign.right));
-    bytes += generator.textEncoded(
-        await CharsetConverter.encode('TIS-620', 'ยอดสุทธิ ฿0.00'),
-        styles: PosStyles(align: PosAlign.right));
-    bytes += generator.textEncoded(
-        await CharsetConverter.encode('TIS-620', 'รับเงินสด ฿0.00'),
-        styles: PosStyles(align: PosAlign.right));
-    bytes += generator.textEncoded(
-        await CharsetConverter.encode('TIS-620', 'เงินทอน ฿0.00'),
-        styles: PosStyles(align: PosAlign.right));
-
     bytes += generator.feed(1);
-    bytes += generator.hr();
-    bytes += generator.textEncoded(
-        await CharsetConverter.encode('TIS-620', 'พนักงานขาย : ตาหวาน สตูดิโอ'),
-        styles: PosStyles(align: PosAlign.center));
-    final now = DateTime.now();
-    final formatter = DateFormat('MM/dd/yyyy H:m');
-    final String timestamp = formatter.format(now);
-    bytes += generator.textEncoded(
-        await CharsetConverter.encode('TIS-620', 'วันเวลา : $timestamp'),
-        styles: PosStyles(align: PosAlign.center));
-     bytes += generator.hr();
-    bytes += generator.feed(1);
-
-    bytes += generator.textEncoded(
-        await CharsetConverter.encode('TIS-620', 'ขอบพระคุณที่มาอุดหนุนนะคะ'),
-        styles: PosStyles(align: PosAlign.center));
-    bytes += generator.feed(2);
     bytes += generator.cut();
     return bytes;
   }

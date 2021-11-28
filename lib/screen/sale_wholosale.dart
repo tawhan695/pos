@@ -367,7 +367,7 @@ Navigator.of(context).pushNamedAndRemoveUntil(
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Tawhan POS ( มัทนาไข่สด )'),
+          title: const Text('MTN POS ( มัทนาไข่สด )'),
            actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
@@ -676,7 +676,7 @@ Navigator.of(context).pushNamedAndRemoveUntil(
                                 } else {
                                   return Container(
                                     child: Center(
-                                      child: Text('Loding...'),
+                                      child: CircularProgressIndicator(),
                                     ),
                                   );
                                 }
@@ -694,18 +694,6 @@ Navigator.of(context).pushNamedAndRemoveUntil(
                             builder: (context, AsyncSnapshot snapshot) {
                               if (snapshot.data != null) {
                                 return Container(
-                                  // margin: const EdgeInsets.symmetric(
-                                  //     horizontal: 2, vertical: 1),
-                                  // decoration: BoxDecoration(
-                                  //   borderRadius:
-                                  //       BorderRadius.all(Radius.circular(10.0)),
-                                  //   color: Colors.white,
-                                  //   boxShadow: [
-                                  //     // BoxShadow(
-                                  //     //     // color: Colors.black.withAlpha(100),
-                                  //     //     blurRadius: 1.0),
-                                  //   ],
-                                  // ),
                                   padding: const EdgeInsets.all(10.0),
                                   child: GridView.builder(
                                       gridDelegate:
@@ -742,6 +730,7 @@ Navigator.of(context).pushNamedAndRemoveUntil(
                                                   ),
                                                 ),
                                                 onPressed: () {
+                                                 
                                                   var provider = Provider.of<
                                                           OrderProvider>(
                                                       context,
@@ -749,16 +738,13 @@ Navigator.of(context).pushNamedAndRemoveUntil(
                                                   if (provider.e429()) {
                                                     showAlertDialog(context);
                                                   }
-                                                  // snapshot.data[index].qty > 0 ?
-
                                                   print(
                                                       'qty ${snapshot.data[index].qty}');
                                                   if (snapshot.data[index].qty >
                                                       0) {
                                                     provider.addCart(snapshot
                                                         .data[index].sku);
-                                                    snapshot.data[index].qty -
-                                                        1;
+                                                    snapshot.data[index].qty -1;
                                                   } else {
                                                     showAlertDialog2(context);
                                                   }
@@ -801,13 +787,6 @@ Navigator.of(context).pushNamedAndRemoveUntil(
                                                                   Icons.error,
                                                                 ),
                                                               ),
-                                                              //     Image(
-                                                              //   image: NetworkImage("${URL + snapshot.data[index].image}",),
-                                                              //   errorBuilder: (context, exception, stackTrack) => Icon(Icons.error,),
-                                                              //   // imageErrorBuilder:(context, exception, stackTrack) => Icon(Icons.error,),
-                                                              //   // height: 65
-                                                              //   // double.infinity,
-                                                              // ),
                                                             ),
                                                           ),
                                                           SizedBox(height: 5),
@@ -912,7 +891,7 @@ Navigator.of(context).pushNamedAndRemoveUntil(
                               } else {
                                 return Container(
                                   child: Center(
-                                    child: Text('Loding...'),
+                                    child:  CircularProgressIndicator(),
                                   ),
                                 );
                               }

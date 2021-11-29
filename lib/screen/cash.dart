@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pos/provider/cart_provider.dart';
 import 'package:pos/provider/order_provider.dart';
 import 'package:pos/screen/cash_widget/cash.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,7 @@ class _Cash_screenState extends State<Cash_screen> {
   @override
   Widget build(BuildContext context) {
         // final _controller = TextEditingController();
-  var provider = Provider.of<OrderProvider>(context,listen:false);
+  var provider = Provider.of<CartProvider>(context,listen:false);
       var sum = provider.getSum();
     return DefaultTabController(
       initialIndex: 0,

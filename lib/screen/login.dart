@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pos/network_api/api.dart';
-import 'package:pos/screen/sale_retail.dart';
+import 'package:pos/screen/sale.dart';
 import 'package:pos/screen/sale_wholosale.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:oktoast/oktoast.dart';

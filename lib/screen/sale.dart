@@ -31,15 +31,15 @@ import 'dart:io';
 import 'dart:async';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-class SaleWholosale extends StatefulWidget {
-  // SaleWholosale({Key? key}) : super(key: key);
+class Sale extends StatefulWidget {
+  // Sale({Key? key}) : super(key: key);
   static const RouteName = '/sale-wholosale';
 
   @override
-  _SaleWholosaleState createState() => _SaleWholosaleState();
+  _SaleState createState() => _SaleState();
 }
 
-class _SaleWholosaleState extends State<SaleWholosale> {
+class _SaleState extends State<Sale> {
   final _advancedDrawerController = AdvancedDrawerController();
   var isActive = 0;
   var sale = '0';
@@ -291,7 +291,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                 ListTile(
                   onTap: () {
                     Navigator.of(context).pushNamedAndRemoveUntil(
-                        SaleWholosale.RouteName, (route) => false);
+                        Sale.RouteName, (route) => false);
                   },
                   tileColor: Colors.white,
                   leading: Icon(
@@ -1146,18 +1146,14 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                                             .green),
                                                                   ),
                                                                   // Spacer(),
-                                                                  
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Container(
+                                                                  Container(
                                                                     alignment:
                                                                         Alignment
                                                                             .topLeft,
                                                                     padding: EdgeInsets
                                                                         .only(
                                                                             left:
-                                                                                0),
+                                                                                20),
                                                                     child: Text(
                                                                       ' ฿${data.sum}',
                                                                       style: TextStyle(
@@ -1169,8 +1165,10 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                                               Colors.black),
                                                                     ),
                                                                   ),
+                                                                ],
+                                                              ),
+                                                            ),
                                                           ],
-                                                          
                                                         ),
                                                       ),
                                                       Spacer(),

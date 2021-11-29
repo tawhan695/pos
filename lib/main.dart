@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:pos/network_api/api.dart';
+import 'package:pos/provider/cart_provider.dart';
 import 'package:pos/provider/customer_provider.dart';
 import 'package:pos/provider/list_order_provider.dart';
 import 'package:pos/provider/order_provider.dart';
@@ -18,7 +19,7 @@ import 'package:pos/screen/payment_widget/payment.dart';
 import 'package:pos/screen/product/product.dart';
 import 'package:pos/screen/receipt.dart';
 // import 'package:pos/routes/app_routes.dart';
-import 'package:pos/screen/sale_retail.dart';
+import 'package:pos/screen/sale.dart';
 import 'package:pos/screen/sale_wholosale.dart';
 import 'package:pos/screen/setting.dart';
 import 'package:pos/screen/user_widget/add_user.dart';
@@ -68,6 +69,9 @@ class MyApp extends StatelessWidget {
             return OrderProvider();
           }),
           ChangeNotifierProvider(create: (context){
+            return CartProvider();
+          }),
+          ChangeNotifierProvider(create: (context){
             return CustomerProvider();
           }),
           ChangeNotifierProvider(create: (context){
@@ -85,11 +89,12 @@ class MyApp extends StatelessWidget {
             // auth == true ?
             // SaleWholosale.RouteName:
             Landing.RouteName,
+            //  Sale.RouteName,
             
  
             routes: {
               Login.RouteName: (context) => Login(),
-              SaleRetail.RouteName: (context) => SaleRetail(),
+              Sale.RouteName: (context) => Sale(),
               SaleWholosale.RouteName: (context) => SaleWholosale(),
               // PaySuccess.RouteName: (context) => PaySuccess(),
               UserAddScreen.RouteName: (context) => UserAddScreen(),

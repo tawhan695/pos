@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pos/network_api/api.dart';
+import 'package:pos/provider/cart_provider.dart';
 import 'package:pos/provider/customer_provider.dart';
 import 'package:pos/provider/order_provider.dart';
 import 'package:pos/screen/change/change.dart';
@@ -18,16 +19,43 @@ class Cash extends StatefulWidget {
 
 class _CashState extends State<Cash> {
   bool _submit = true;
+  List ListJson = [];
+  
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getListCart();
+  }
+
+  getListCart() {
+    var cart = Provider.of<CartProvider>(context, listen: false).getCart();
+    print(cart);
+
+    cart.forEach((e) {
+      var toJson = {
+        'quantity': e.quantity,
+        'product_id': e.product_id,
+        'price': e.price,
+        'status_sale': e.status_sale,
+        // 'retail_price': e.retail_price,
+      };
+      setState(() {
+        ListJson.add(toJson);
+      });
+    });
+    // var json = jsonEncode(ListJson, toEncodable: (e) => e.toJsonAttr());
+    // print(json);
+    print(jsonEncode(ListJson));
+    String data = jsonEncode(ListJson);
+    
+    print(jsonDecode(data)[0]);
   }
 
   final _controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<OrderProvider>(context, listen: false);
+    var provider = Provider.of<CartProvider>(context, listen: false);
     var sum = provider.getSum();
     _controller.text = sum.toString();
     return SingleChildScrollView(
@@ -97,6 +125,7 @@ class _CashState extends State<Cash> {
                         ? () async {
                             print(_controller.text);
                             var data = {
+                              'cart': jsonEncode(ListJson),
                               'cash': _controller.text,
                               'payid_by': 'เงินสด',
                               'customer': Provider.of<CustomerProvider>(context,
@@ -112,6 +141,10 @@ class _CashState extends State<Cash> {
                                   : '0',
                             };
                             print(data);
+                            print(jsonEncode(ListJson));
+
+
+
                             final response =
                                 await Network().getData(data, '/sale');
                             var body = json.decode(response.body);
@@ -119,25 +152,26 @@ class _CashState extends State<Cash> {
                             // Navigator.of(context).pushReplacementNamed(PaySuccess.RouteName);
                             // pushNamedAndRemoveUntil คำสั่งนี้ไม่มีปุ้มย้อนกลับ
                             print(body);
-                            if (body['success']) {
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PaySuccess(
-                                          change: body['change'].toString(),
-                                          payment: 'เงินสด',
-                                          sum: sum.toString(),
-                                          id:body['order'].toString(),
-                                          user_id:body['user_id'].toString(),
-                                          customer_id:body['customer_id'].toString()
-                                          )),
-                                  (route) => false);
-                              Provider.of<CustomerProvider>(context,
-                                      listen: false)
-                                  .emtySelect();
-                            } else {
-                              print('ไม่สำเร็จ');
-                            }
+
+                            // if (body['success']) {
+                            //   Navigator.pushAndRemoveUntil(
+                            //       context,
+                            //       MaterialPageRoute(
+                            //           builder: (context) => PaySuccess(
+                            //               change: body['change'].toString(),
+                            //               payment: 'เงินสด',
+                            //               sum: sum.toString(),
+                            //               id:body['order'].toString(),
+                            //               user_id:body['user_id'].toString(),
+                            //               customer_id:body['customer_id'].toString()
+                            //               )),
+                            //       (route) => false);
+                            //   Provider.of<CustomerProvider>(context,
+                            //           listen: false)
+                            //       .emtySelect();
+                            // } else {
+                            //   print('ไม่สำเร็จ');
+                            // }
 
                             // Navigator.pushReplacementNamed(context,Change.RouteName);
                             //  Navigator.of(context).pushNamedAndRemoveUntil(PaySuccess.RouteName, (route) => false);

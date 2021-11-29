@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:pos/network_api/api.dart';
+import 'package:pos/provider/cart_provider.dart';
 import 'package:pos/provider/customer_provider.dart';
 import 'package:pos/provider/order_provider.dart';
 import 'package:pos/screen/payment_widget/payment.dart';
@@ -17,7 +18,7 @@ class Promptpay extends StatefulWidget {
 class _PromptpayState extends State<Promptpay> {
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<OrderProvider>(context, listen: false);
+    var provider = Provider.of<CartProvider>(context, listen: false);
     var sum = provider.getSum();
     return Column(
       children: [
@@ -55,7 +56,7 @@ class _PromptpayState extends State<Promptpay> {
             onPressed: () async {
               print('payment>>');
               var data = {
-                'cash': Provider.of<OrderProvider>(context, listen: false)
+                'cash': Provider.of<CartProvider>(context, listen: false)
                     .getSum()
                     .toString(),
                 'payid_by': 'พร้อมเพย์',

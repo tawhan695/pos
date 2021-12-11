@@ -29,43 +29,25 @@ class _PrintterState extends State<Printer> {
   late SharedPreferences localStorage;
   var _devices_select = null;
   bool isPrinting = false;
-  var Devices;
+
   @override
   void initState() {
-    var  _devices_esc = Provider.of<ESC>(context, listen: false);
-    // _devices_esc.startScanDevices();
-    print('########1#######');
-    // _devices_esc.stopScanDevices();
-    // print('#########2######');
-    _devices_esc.selectDevices();
-    setState(() {
-    _devices = _devices_esc.showDevice();
-      
-    });
-    //  _devices_esc.getPrintter();
-    print(_devices);
-    if (_devices.length > 0) {
-      print('device len ${_devices.length}');
-      _devices.forEach((e){
-        print('${e.name} ${e.address}  ${e.type}');
-      });
-    }
-    print('#########e######');
-      // _devices_select = Provider.of<ESC>(context, listen: false).getESC();
     super.initState();
-    // printerManager.scanResults.listen((devices) async {
-    //   print('UI: Devices found ${devices.length}');
-    //   setState(() {
-    //     _devices = devices;
 
-    //   });
-    // });
-    // _startScanDevices();
-    // loadPrint();
-    // setState(() {
-    // });
-    //  Provider.of<ESC>(context, listen: false)
-    //                 .getBranch();
+    printerManager.scanResults.listen((devices) async {
+      print('UI: Devices found ${devices.length}');
+      setState(() {
+        _devices = devices;
+        
+      });
+    });
+    _startScanDevices();
+    loadPrint();
+    setState(() {
+      _devices_select = Provider.of<ESC>(context, listen: false).getESC();
+    });
+     Provider.of<ESC>(context, listen: false)
+                    .getBranch();
   }
 
   loadPrint() async {
@@ -76,20 +58,20 @@ class _PrintterState extends State<Printer> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    // _stopScanDevices();
+    _stopScanDevices();
   }
 
-  // void _startScanDevices() {
-  //   print('_startScanDevices');
-  //   setState(() {
-  //     _devices = [];
-  //   });
-  //   printerManager.startScan(Duration(seconds: 4));
-  // }
+  void _startScanDevices() {
+    print('_startScanDevices');
+    setState(() {
+      _devices = [];
+    });
+    printerManager.startScan(Duration(seconds: 4));
+  }
 
-  // void _stopScanDevices() {
-  //   printerManager.stopScan();
-  // }
+  void _stopScanDevices() {
+    printerManager.stopScan();
+  }
 
   void _testPrint(PrinterBluetooth printer) async {
     setState(() {
@@ -128,11 +110,7 @@ class _PrintterState extends State<Printer> {
         shrinkWrap: true,
         itemCount: _devices.length,
         itemBuilder: (BuildContext context, int index) {
-         return
-          _devices.length <= 0 ?
-          Text('ไม่มีข้อมูล'):
-          
-          InkWell(
+          return InkWell(
             onTap: () {
               Navigator.pop(context);
               setState(() {
@@ -262,9 +240,9 @@ class _PrintterState extends State<Printer> {
                           child: Center(
                               child: Text(
                             // print(_devices_select);
-                             Provider.of<ESC>(context, listen: false).getESC() == null
+                            _devices_select == null
                                 ? 'ยังไม่เลือก'
-                                : '${Provider.of<ESC>(context, listen: false).getESC().address}',
+                                : '${_devices_select.name}',
                             style: TextStyle(fontSize: 20, color: Colors.grey),
                           )),
                         ),
@@ -286,7 +264,7 @@ class _PrintterState extends State<Printer> {
                                 );
                               });
 
-                          // _stopScanDevices();
+                          _stopScanDevices();
                           print('หยุดการค้นหา');
                         },
                         child: Text(

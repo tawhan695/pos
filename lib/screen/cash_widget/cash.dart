@@ -49,7 +49,7 @@ class _CashState extends State<Cash> {
     print(jsonEncode(ListJson));
     String data = jsonEncode(ListJson);
     
-    print(jsonDecode(data)[0]);
+    // print(jsonDecode(data)[0]);
   }
 
   final _controller = TextEditingController();
@@ -141,7 +141,7 @@ class _CashState extends State<Cash> {
                                   : '0',
                             };
                             print(data);
-                            print(jsonEncode(ListJson));
+                            // print(jsonEncode(ListJson));
 
 
 
@@ -153,28 +153,28 @@ class _CashState extends State<Cash> {
                             // pushNamedAndRemoveUntil คำสั่งนี้ไม่มีปุ้มย้อนกลับ
                             print(body);
 
-                            // if (body['success']) {
-                            //   Navigator.pushAndRemoveUntil(
-                            //       context,
-                            //       MaterialPageRoute(
-                            //           builder: (context) => PaySuccess(
-                            //               change: body['change'].toString(),
-                            //               payment: 'เงินสด',
-                            //               sum: sum.toString(),
-                            //               id:body['order'].toString(),
-                            //               user_id:body['user_id'].toString(),
-                            //               customer_id:body['customer_id'].toString()
-                            //               )),
-                            //       (route) => false);
-                            //   Provider.of<CustomerProvider>(context,
-                            //           listen: false)
-                            //       .emtySelect();
-                            // } else {
-                            //   print('ไม่สำเร็จ');
-                            // }
+                            if (body['success']) {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PaySuccess(
+                                          change: body['change'].toString(),
+                                          payment: 'เงินสด',
+                                          sum: sum.toString(),
+                                          id:body['order'].toString(),
+                                          user_id:body['user_id'].toString(),
+                                          customer_id:body['customer_id'].toString()
+                                          )),
+                                  (route) => false);
+                              Provider.of<CustomerProvider>(context,
+                                      listen: false)
+                                  .emtySelect();
+                            } else {
+                              print('ไม่สำเร็จ');
+                            }
 
                             // Navigator.pushReplacementNamed(context,Change.RouteName);
-                            //  Navigator.of(context).pushNamedAndRemoveUntil(PaySuccess.RouteName, (route) => false);
+                             Navigator.of(context).pushNamedAndRemoveUntil(PaySuccess.RouteName, (route) => false);
                           }
                         : null,
                     //  icon: Icon(Icons.attach_money_rounded),

@@ -7,7 +7,10 @@ import 'package:pos/network_api/api.dart';
 import 'package:pos/provider/customer_provider.dart';
 import 'package:pos/provider/list_order_provider.dart';
 import 'package:pos/screen/customer.dart';
+import 'package:pos/screen/login.dart';
+// import 'package:pos/screen/page_emty.dart';
 import 'package:pos/screen/product/product.dart';
+import 'package:pos/screen/remove_product/remove_product.dart';
 import 'package:pos/screen/sale_wholosale.dart';
 import 'package:pos/screen/setting.dart';
 import 'package:provider/provider.dart';
@@ -213,6 +216,14 @@ setState_net(int page){
                 ListTile(
                   onTap: () {
                     Navigator.of(context).pushNamedAndRemoveUntil(
+                        RemoveProduct.RouteName, (route) => false);
+                  },
+                  leading: Icon(Icons.remove_shopping_cart),
+                  title: Text('สินค้าชำรุด',),
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
                         Customer.RouteName, (route) => false);
                   },
                   leading: Icon(Icons.person),
@@ -234,6 +245,17 @@ setState_net(int page){
                   leading: Icon(Icons.settings),
                   title: Text('ตั้งค่า'),
                 ),
+                ListTile(
+                    leading: Icon(Icons.logout),
+                    onTap: () async {
+                      var stt = await Network().logOut();
+                      //print('stt $stt');
+                      if (stt == true) {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            Login.RouteName, (route) => false);
+                      }
+                    },
+                    title: Text('ออกจากระบบ')),
                 Spacer(),
                 DefaultTextStyle(
                   style: TextStyle(

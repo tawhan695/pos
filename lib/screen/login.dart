@@ -322,7 +322,7 @@ class _LoginState extends State<Login> {
                                                 json.encode(body['user']));
                                             localStorage.setString('branch',
                                                 json.encode(body['branch']));
-                                                  print("body['branch']");
+                                                  // print("body['branch']");
                                                   print(body['branch']);
                                             print('exit page login ');
                                             Navigator.of(context)

@@ -27,20 +27,45 @@ class ESC with ChangeNotifier {
   var _pageSize = '58 mm';
   // late  Image image;
   List listData = [];
-  List Branches = []; 
+  List Branches = [];
   var USER = '';
+  List<PrinterBluetooth> _devices = [];
+  startScanDevices() {
+    print('_startScanDevices');
+    _devices = [];
+    printerManager.startScan(Duration(seconds: 4));
+  }
+
+  stopScanDevices() {
+    print('_stopScanDevices');
+    printerManager.stopScan();
+  }
+
+  selectDevices() {
+    printerManager.scanResults.listen((devices) async {
+      print('UI: Devices found ${devices.length}');
+      _devices = devices;
+    });
+// stopScanDevices();
+  }
 
   intESC(PrinterBluetooth printer) async {
+    setPrinter(printer);
     _devices_select = printer;
-    //   final ByteData data = await rootBundle.load('assets/images/5942.png');
-    //  final Uint8List buf = data.buffer.asUint8List();
-    //   image = decodeImage(buf)!;
-    // print(buf);
+    print(printer.name);
+    print(printer.address);
+    print(printer.type);
+    print(printer);
     notifyListeners();
   }
 
   getESC() {
+    print('_devices_select');
     return _devices_select;
+  }
+
+  showDevice() {
+    return _devices;
   }
 
   setPaperSize(paper) {
@@ -51,36 +76,71 @@ class ESC with ChangeNotifier {
     return _pageSize;
   }
 
-   getBranch() async { 
-   SharedPreferences localStorage = await SharedPreferences.getInstance();
-   var branch = jsonDecode(localStorage.getString('branch').toString());
-   
-  //  print(branch);
-  //  print(branch);
-   print('start branch');
- 
-    
-   Branches.add(branch['name']);
+  getPrintter() async {
+    print('getPrintter ');
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var printer = jsonDecode(localStorage.getString('printer').toString());
+    print('get $printer');
+    if (printer != null) {
+      if (_devices.length > 0) {
+        print('device  ${_devices.length}');
+        _devices.forEach((e) {
+          print('${e.name} ${e.address}  ${e.type}');
+          if (e.address == printer['address']) {
+            print('connect .. to  ${printer['address']}');
+            _devices_select = e;
 
-   Branches.add(branch['des']);
+          }
+        });
+      }
+    }else{
+      print('printer = $printer');
+    }
 
-   print(Branches);
-   }
+    //  print(printer['address']);
+    //  return printer;
+  }
 
-  void Print(order,customer,user) async {
+  setPrinter(printer) async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var data = {
+      'name': '${printer.name}',
+      'address': '${printer.address}',
+      'type': '${printer.type}'
+    };
+    print('set ${data}');
+    localStorage.setString('printer', json.encode(data));
+  }
+
+  getBranch() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var branch = jsonDecode(localStorage.getString('branch').toString());
+
+    //  print(branch);
+    //  print(branch);
+    print('start branch');
+
+    Branches.add(branch['name']);
+
+    Branches.add(branch['des']);
+
+    print(Branches);
+  }
+
+  void Print(order, customer, user) async {
     print('order ${order}');
     print(order);
     print('show');
     print('getBranch ${Branches}');
     List or = await detail(order);
-    List o1 =await orderload(order);
-     print('Print');
-     print(Branches[0]);
-     print(Branches[1]);
+    List o1 = await orderload(order);
+    print('Print');
+    print(Branches[0]);
+    print(Branches[1]);
     // List branch = await getBranch();
-      //  print('getBranch ${branch}');
-      //  print('getBranch ${branch[0]}');
-      //  print('getBranch ${branch[1]}');
+    //  print('getBranch ${branch}');
+    //  print('getBranch ${branch[0]}');
+    //  print('getBranch ${branch[1]}');
 
     var Paper;
     if (_pageSize == '58 mm') {
@@ -95,8 +155,8 @@ class ESC with ChangeNotifier {
     }
     final profile = await CapabilityProfile.load();
     // TEST PRINT
-    final PosPrintResult res =
-        await printerManager.printTicket(await ticket(Paper, profile, or,o1,customer,user,Branches));
+    final PosPrintResult res = await printerManager.printTicket(
+        await ticket(Paper, profile, or, o1, customer, user, Branches));
     showToast(res.msg);
   }
 
@@ -115,25 +175,25 @@ class ESC with ChangeNotifier {
       print(body[0]);
       print(body['paid_by']);
       var str = body['created_at'];
-        var newStr = str.substring(0, 10) + ' ' + str.substring(11, 19);
-        print(newStr); // 2019-04-05 14:00:51.000
-        ListOrder_model model = ListOrder_model(
-            body['id'],
-             body['cash_totol'],
-             body['cash'],
-             body['discount'],
-             body['net_amount'],
-             body['change'],
-             body['status'],
-             body['status_sale'],
-             body['paid_by'],
-             body['user_id'],
-             body['customer_id'],
-             body['branch_id'],
-            newStr
-            // e['created_at'],
-            );
-        _order.add(model);
+      var newStr = str.substring(0, 10) + ' ' + str.substring(11, 19);
+      print(newStr); // 2019-04-05 14:00:51.000
+      ListOrder_model model = ListOrder_model(
+          body['id'],
+          body['cash_totol'],
+          body['cash'],
+          body['discount'],
+          body['net_amount'],
+          body['change'],
+          body['status'],
+          body['status_sale'],
+          body['paid_by'],
+          body['user_id'],
+          body['customer_id'],
+          body['branch_id'],
+          newStr
+          // e['created_at'],
+          );
+      _order.add(model);
       return _order;
     }
   }
@@ -176,129 +236,130 @@ class ESC with ChangeNotifier {
     return _detail;
   }
 
-  Future<List<int>> ticket(
-    PaperSize paper, CapabilityProfile profile, order_detail,order,customer,user,branch) async {
-      final Generator generator = Generator(paper, profile);
-      // Uint8List encThai41 = await CharsetConverter.encode('TIS-620', 'สวัวสดีนี้คือการทดสอบภาษา81ไทย');
-      List<int> bytes = [];
-      // Print image
-      // bytes += generator.image(image);
-      bytes += generator.textEncoded(
-          await CharsetConverter.encode('TIS-620', '${branch[0]}'),
-          styles: PosStyles(bold: true, align: PosAlign.center)); //ชื่อร้าน สาขา
-      bytes += generator.textEncoded(
-          await CharsetConverter.encode('TIS-620',
-              '${branch[1]}'),
-          styles: PosStyles(align: PosAlign.center)); //ชื่อร้าน สาขา
-      bytes += generator.hr();
-      //  bytes += generator.feed(2);
-      Uint8List et3 = await CharsetConverter.encode('TIS-620', 'ใบเสร็จ/สินค้า');
-      bytes += generator.textEncoded(et3,
-          styles: PosStyles(align: PosAlign.center)); //ชื่อร้าน สาขา
+  Future<List<int>> ticket(PaperSize paper, CapabilityProfile profile,
+      order_detail, order, customer, user, branch) async {
+    final Generator generator = Generator(paper, profile);
+    // Uint8List encThai41 = await CharsetConverter.encode('TIS-620', 'สวัวสดีนี้คือการทดสอบภาษา81ไทย');
+    List<int> bytes = [];
+    // Print image
+    // bytes += generator.image(image);
+    bytes += generator.textEncoded(
+        await CharsetConverter.encode('TIS-620', '${branch[0]}'),
+        styles: PosStyles(bold: true, align: PosAlign.center)); //ชื่อร้าน สาขา
+    bytes += generator.textEncoded(
+        await CharsetConverter.encode('TIS-620', '${branch[1]}'),
+        styles: PosStyles(align: PosAlign.center)); //ชื่อร้าน สาขา
+    bytes += generator.hr();
+    //  bytes += generator.feed(2);
+    Uint8List et3 = await CharsetConverter.encode('TIS-620', 'ใบเสร็จ/สินค้า');
+    bytes += generator.textEncoded(et3,
+        styles: PosStyles(align: PosAlign.center)); //ชื่อร้าน สาขา
 
-      bytes += generator.hr();
-      Uint8List etr1 = await CharsetConverter.encode('TIS-620', 'จำนวน');
-      Uint8List etr2 = await CharsetConverter.encode('TIS-620', 'สินค้า');
-      Uint8List etr3 = await CharsetConverter.encode('TIS-620', 'ราคา');
-      Uint8List etr4 = await CharsetConverter.encode('TIS-620', 'รวม');
+    bytes += generator.hr();
+    Uint8List etr1 = await CharsetConverter.encode('TIS-620', 'จำนวน');
+    Uint8List etr2 = await CharsetConverter.encode('TIS-620', 'สินค้า');
+    Uint8List etr3 = await CharsetConverter.encode('TIS-620', 'ราคา');
+    Uint8List etr4 = await CharsetConverter.encode('TIS-620', 'รวม');
+    bytes += generator.row([
+      PosColumn(
+        textEncoded: etr1,
+        width: 3,
+        styles: PosStyles(align: PosAlign.left, underline: true, bold: true),
+      ),
+      PosColumn(
+        textEncoded: etr2,
+        width: 5,
+        styles: PosStyles(align: PosAlign.left, underline: true, bold: true),
+      ),
+      PosColumn(
+        textEncoded: etr3,
+        width: 2,
+        styles: PosStyles(align: PosAlign.right, underline: true, bold: true),
+      ),
+      PosColumn(
+        textEncoded: etr4,
+        width: 2,
+        styles: PosStyles(align: PosAlign.right, underline: true, bold: true),
+      ),
+    ]);
+
+    for (int i = 0; i < order_detail.length; i++) {
       bytes += generator.row([
         PosColumn(
-          textEncoded: etr1,
-          width: 3,
-          styles: PosStyles(align: PosAlign.left, underline: true, bold: true),
-        ),
-        PosColumn(
-          textEncoded: etr2,
-          width: 5,
-          styles: PosStyles(align: PosAlign.left, underline: true, bold: true),
-        ),
-        PosColumn(
-          textEncoded: etr3,
+          textEncoded: await CharsetConverter.encode(
+              'TIS-620', '${order_detail[i].qty}'),
           width: 2,
-          styles: PosStyles(align: PosAlign.right, underline: true, bold: true),
+          styles: PosStyles(
+            align: PosAlign.center,
+          ),
         ),
         PosColumn(
-          textEncoded: etr4,
+          textEncoded: await CharsetConverter.encode(
+              'TIS-620', '${order_detail[i].name}'),
+          width: 6,
+          styles: PosStyles(
+            align: PosAlign.left,
+          ),
+        ),
+        PosColumn(
+          textEncoded: await CharsetConverter.encode(
+              'TIS-620', '${order_detail[i].price}'),
           width: 2,
-          styles: PosStyles(align: PosAlign.right, underline: true, bold: true),
+          styles: PosStyles(
+            align: PosAlign.right,
+          ),
+        ),
+        PosColumn(
+          textEncoded: await CharsetConverter.encode(
+              'TIS-620', '${order_detail[i].totol}'),
+          width: 2,
+          styles: PosStyles(
+            align: PosAlign.right,
+          ),
         ),
       ]);
+    }
+    bytes += generator.hr();
+    bytes += generator.textEncoded(
+        await CharsetConverter.encode('TIS-620', 'รวม ฿${order[0].cash_totol}'),
+        styles: PosStyles(bold: true, align: PosAlign.right));
+    bytes += generator.textEncoded(
+        await CharsetConverter.encode('TIS-620', 'สวนลด ฿${order[0].discount}'),
+        styles: PosStyles(align: PosAlign.right));
+    bytes += generator.textEncoded(
+        await CharsetConverter.encode(
+            'TIS-620', 'ยอดสุทธิ ฿${order[0].net_amount}'),
+        styles: PosStyles(align: PosAlign.right));
+    bytes += generator.textEncoded(
+        await CharsetConverter.encode(
+            'TIS-620', 'รับเงิน ${order[0].paid_by}  ฿${order[0].cash}'),
+        styles: PosStyles(align: PosAlign.right));
+    bytes += generator.textEncoded(
+        await CharsetConverter.encode('TIS-620', 'เงินทอน ฿${order[0].change}'),
+        styles: PosStyles(align: PosAlign.right));
 
-      for (int i = 0; i < order_detail.length; i++) {
-        bytes += generator.row([
-          PosColumn(
-            textEncoded: await CharsetConverter.encode(
-                'TIS-620', '${order_detail[i].qty}'),
-            width: 2,
-            styles: PosStyles(
-              align: PosAlign.center,
-            ),
-          ),
-          PosColumn(
-            textEncoded: await CharsetConverter.encode(
-                'TIS-620', '${order_detail[i].name}'),
-            width: 6,
-            styles: PosStyles(
-              align: PosAlign.left,
-            ),
-          ),
-          PosColumn(
-            textEncoded: await CharsetConverter.encode(
-                'TIS-620', '${order_detail[i].price}'),
-            width: 2,
-            styles: PosStyles(
-              align: PosAlign.right,
-            ),
-          ),
-          PosColumn(
-            textEncoded: await CharsetConverter.encode(
-                'TIS-620', '${order_detail[i].totol}'),
-            width: 2,
-            styles: PosStyles(
-              align: PosAlign.right,
-            ),
-          ),
-        ]);
-      }
-      bytes += generator.hr();
-      bytes += generator.textEncoded(
-          await CharsetConverter.encode('TIS-620', 'รวม ฿${order[0].cash_totol}'),
-          styles: PosStyles(bold: true, align: PosAlign.right));
-      bytes += generator.textEncoded(
-          await CharsetConverter.encode('TIS-620', 'สวนลด ฿${order[0].discount}'),
-          styles: PosStyles(align: PosAlign.right));
-      bytes += generator.textEncoded(
-          await CharsetConverter.encode('TIS-620', 'ยอดสุทธิ ฿${order[0].net_amount}'),
-          styles: PosStyles(align: PosAlign.right));
-      bytes += generator.textEncoded(
-          await CharsetConverter.encode('TIS-620', 'รับเงิน ${order[0].paid_by}  ฿${order[0].cash}'),
-          styles: PosStyles(align: PosAlign.right));
-      bytes += generator.textEncoded(
-          await CharsetConverter.encode('TIS-620', 'เงินทอน ฿${order[0].change}'),
-          styles: PosStyles(align: PosAlign.right));
+    bytes += generator.feed(1);
+    bytes += generator.hr();
+    bytes += generator.textEncoded(
+        await CharsetConverter.encode('TIS-620', 'ลูกค้า :$customer'),
+        styles: PosStyles(align: PosAlign.center));
+    bytes += generator.textEncoded(
+        await CharsetConverter.encode('TIS-620', 'พนักงานขาย : $user'),
+        styles: PosStyles(align: PosAlign.center));
+    final now = DateTime.now();
+    final formatter = DateFormat('MM/dd/yyyy H:m');
+    final String timestamp = formatter.format(now);
+    bytes += generator.textEncoded(
+        await CharsetConverter.encode('TIS-620', 'วันเวลา : $timestamp'),
+        styles: PosStyles(align: PosAlign.center));
+    bytes += generator.hr();
+    bytes += generator.feed(1);
 
-      bytes += generator.feed(1);
-      bytes += generator.hr();
-      bytes += generator.textEncoded(
-          await CharsetConverter.encode('TIS-620', 'ลูกค้า :$customer'),
-          styles: PosStyles(align: PosAlign.center));
-      bytes += generator.textEncoded(
-          await CharsetConverter.encode('TIS-620', 'พนักงานขาย : $user'),
-          styles: PosStyles(align: PosAlign.center));
-      final now = DateTime.now();
-      final formatter = DateFormat('MM/dd/yyyy H:m');
-      final String timestamp = formatter.format(now);
-      bytes += generator.textEncoded(
-          await CharsetConverter.encode('TIS-620', 'วันเวลา : $timestamp'),
-          styles: PosStyles(align: PosAlign.center));
-      bytes += generator.hr();
-      bytes += generator.feed(1);
-
-      bytes += generator.textEncoded(
-          await CharsetConverter.encode('TIS-620', 'ขอบพระคุณที่มาอุดหนุนนะคะ'),
-          styles: PosStyles(align: PosAlign.center));
-      bytes += generator.feed(2);
-      bytes += generator.cut();
-      return bytes;
+    bytes += generator.textEncoded(
+        await CharsetConverter.encode('TIS-620', 'ขอบพระคุณที่มาอุดหนุนนะคะ'),
+        styles: PosStyles(align: PosAlign.center));
+    bytes += generator.feed(2);
+    bytes += generator.cut();
+    return bytes;
   }
 }

@@ -11,6 +11,7 @@ import 'package:pos/provider/cart_provider.dart';
 import 'package:pos/provider/catagory_provider.dart';
 import 'package:pos/provider/customer_provider.dart';
 import 'package:pos/provider/order_provider.dart';
+import 'package:pos/provider/printer_bluetooth.dart';
 import 'package:pos/provider/product_provider.dart';
 import 'package:pos/screen/cash.dart';
 import 'package:pos/screen/customer.dart';
@@ -18,6 +19,7 @@ import 'package:pos/screen/dashboard/dashboard.dart';
 import 'package:pos/screen/login.dart';
 import 'package:pos/screen/product/product.dart';
 import 'package:pos/screen/receipt.dart';
+import 'package:pos/screen/remove_product/remove_product.dart';
 import 'package:pos/screen/sale_widget/cart.dart';
 import 'package:pos/screen/setting.dart';
 import 'package:pos/screen/user_widget/user.dart';
@@ -186,17 +188,28 @@ class _SaleWholosaleState extends State<SaleWholosale> {
       },
     );
   }
-
+start() async {
+  //  await Provider.of<ESC>(context, listen: false).getBranch();
+  //  await Provider.of<ESC>(context, listen: false).startScanDevices();
+  //  await Provider.of<ESC>(context, listen: false).getPrintter();
+   
+  //   var data = await Provider.of<ESC>(context, listen: false).getESC();
+  //   print('Connect $data');
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    
+  //  start();
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     // Provider.of<OrderProvider>(context, listen: false).initCart();
     print('CartProvider');
     Provider.of<CartProvider>(context, listen: false).innitProduct();
+    Provider.of<ProductProvider>(context, listen: false).initData('0','all');
+    Provider.of<ESC>(context, listen: false).getPrintter();
   }
 
   @override
@@ -251,6 +264,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
   bool Hsearch = true;
   @override
   Widget build(BuildContext context) {
+     
     return AdvancedDrawer(
       backdropColor: Color(0xffFF8F33),
       controller: _advancedDrawerController,
@@ -310,6 +324,14 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                   },
                   leading: Icon(Icons.list_alt_rounded),
                   title: Text('ใบเสร็จ'),
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        RemoveProduct.RouteName, (route) => false);
+                  },
+                  leading: Icon(Icons.remove_shopping_cart),
+                  title: Text('สินค้าชำรุด',),
                 ),
                 ListTile(
                   onTap: () {
@@ -444,9 +466,9 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                   ? GestureDetector(
                                       onTap: () {
                                         setState(() {
+                                          //print(Hsearch);
                                           isActive = -1;
                                           Hsearch = false;
-                                          //print(Hsearch);
                                         });
                                       },
                                       child: Container(
@@ -723,6 +745,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                       ),
                                       itemCount: snapshot.data.length,
                                       itemBuilder: (BuildContext ctx, index) {
+                                        
                                         return Container(
                                           child: Container(
                                             alignment: Alignment.center,
@@ -751,7 +774,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                             16), // <-- Radius
                                                   ),
                                                 ),
-                                                onPressed: () {
+                                                onPressed: () async {
                                                   // var provider = Provider.of<
                                                   //         OrderProvider>(
                                                   //     context,
@@ -759,16 +782,24 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                   // if (provider.e429()) {
                                                   //   showAlertDialog(context);
                                                   // }
-                                                  // //print('qty ${snapshot.data[index].qty}');
+                                                  print('qty ${snapshot.data[index].qty}');
                                                   if (snapshot.data[index].qty >
                                                       0) {
-                                                    Provider.of<CartProvider>(
+                                                    var SSt = await Provider.of<CartProvider>(
                                                             context,
                                                             listen: false)
                                                         .addCart(snapshot
                                                             .data[index].sku,1);
-                                                    snapshot.data[index].qty -
-                                                        1;
+                                                   setState(()  {
+                                                        print('sst $SSt');
+                                                      if(SSt == false){
+                                                      showAlertDialog2(context);
+                                                    }
+                                                      // snapshot.data[index].qty -= 1;      
+                                                   });
+
+                                                    // snapshot.data[index].qty -
+                                                    //     1;
                                                   } else {
                                                     showAlertDialog2(context);
                                                   }
@@ -840,10 +871,10 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                                 : Text(
                                                                     snapshot.data[index].name.length >
                                                                             30
-                                                                        ? snapshot.data[index].name.substring(0,
+                                                                        ? '(หมด)'+snapshot.data[index].name.substring(0,
                                                                                 30) +
                                                                             '..'
-                                                                        : snapshot
+                                                                        : '(หมด)'+snapshot
                                                                             .data[index]
                                                                             .name,
                                                                     style: const TextStyle(
@@ -1146,18 +1177,15 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                                             .green),
                                                                   ),
                                                                   // Spacer(),
-                                                                  
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            Container(
+                                                                  data.sum  < 10000 ?
+                                                                  Container(
                                                                     alignment:
                                                                         Alignment
                                                                             .topLeft,
                                                                     padding: EdgeInsets
                                                                         .only(
                                                                             left:
-                                                                                0),
+                                                                                20),
                                                                     child: Text(
                                                                       ' ฿${data.sum}',
                                                                       style: TextStyle(
@@ -1168,9 +1196,31 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                                           color:
                                                                               Colors.black),
                                                                     ),
-                                                                  ),
+                                                                  ):Container(),
+                                                                ],
+                                                              ),  
+                                                            ),
+                                                            data.sum  >= 10000 ?
+                                                            Container(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .topLeft,
+                                                                    // padding: EdgeInsets
+                                                                    //     .only(
+                                                                    //         left:
+                                                                    //             20),
+                                                                    child: Text(
+                                                                      ' ฿${data.sum}',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              19,
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          color:
+                                                                              Colors.black),
+                                                                    ),
+                                                                  ): Container(),
                                                           ],
-                                                          
                                                         ),
                                                       ),
                                                       Spacer(),
@@ -1244,9 +1294,10 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                           ),
                         ),
                       ),
+                    
                       Consumer(
                         builder: (BuildContext context, CartProvider order,
-                            Widget? child) {
+                            Widget) {
                           
                           return Container(
                             height: 60,

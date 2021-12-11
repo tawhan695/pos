@@ -1,33 +1,30 @@
+import 'dart:async';
+
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:pos/network_api/api.dart';
 import 'package:pos/screen/customer.dart';
 import 'package:pos/screen/login.dart';
-import 'package:pos/screen/printter/printter.dart';
 import 'package:pos/screen/product/product.dart';
 import 'package:pos/screen/receipt.dart';
-import 'package:pos/screen/remove_product/remove_product.dart';
 import 'package:pos/screen/sale_wholosale.dart';
-import 'package:flutter/services.dart';
-import 'dart:io';
-import 'package:connectivity/connectivity.dart';
-import 'dart:async';
+import 'package:pos/screen/setting.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-class Setting extends StatefulWidget {
-  // const Setting({ Key? key }) : super(key: key);
-  static const RouteName = '/setting';
+
+class RemoveProduct extends StatefulWidget {
+  RemoveProduct({Key? key}) : super(key: key);
+  static const RouteName = '/remove_product'; 
 
   @override
-  _SettingState createState() => _SettingState();
-}
-
-class _SettingState extends State<Setting> {
-  final _advancedDrawerController = AdvancedDrawerController();
- 
-  String _connectionStatus = 'Unknown';
+  _RemoveProductState createState() => _RemoveProductState();
+}final _advancedDrawerController = AdvancedDrawerController();
+ String _connectionStatus = 'Unknown';
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
+class _RemoveProductState extends State<RemoveProduct> {
   @override
   void initState() {
     super.initState();
@@ -83,7 +80,7 @@ class _SettingState extends State<Setting> {
   }
   @override
   Widget build(BuildContext context) {
-      return AdvancedDrawer(
+    return AdvancedDrawer(
       backdropColor: Color(0xffFF8F33),
       controller: _advancedDrawerController,
       animationCurve: Curves.easeInOut,
@@ -133,6 +130,7 @@ class _SettingState extends State<Setting> {
                   ),
                   title: Text(
                     'ขาย',
+                   
                   ),
                 ),
                 ListTile(
@@ -145,14 +143,6 @@ class _SettingState extends State<Setting> {
                   title: Text('ใบเสร็จ',
                   
                   ),
-                ),
-                 ListTile(
-                  onTap: () {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        RemoveProduct.RouteName, (route) => false);
-                  },
-                  leading: Icon(Icons.remove_shopping_cart),
-                  title: Text('สินค้าชำรุด',),
                 ),
                 ListTile(
                   onTap: () {
@@ -218,7 +208,7 @@ class _SettingState extends State<Setting> {
       child: Scaffold(
         
         appBar: AppBar(
-          title: const Text('MTN POS'),
+          title: const Text('Tawhan POS ( มัทนาไข่สด )'),
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
@@ -235,35 +225,10 @@ class _SettingState extends State<Setting> {
             ),
           ),
         ),
-        body: Container(
-          margin: EdgeInsets.symmetric(vertical: 50,horizontal:50),
-          child: Column(
-            children: <Widget>[
-              Card(
-                child: ListTile(
-                  title: Text('เครื่องพิมพ์',style: TextStyle(fontSize:30)),
-                  leading:  Icon(Icons.print,size: 50),
-                  onTap: () {   
-                    Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => Printer()));
-                    }
-                ),
-              ),
-              Card(
-                child: ListTile(
-                  title: Text('อื่นๆ',style: TextStyle(fontSize:30)),
-                  leading:  Icon(Icons.settings,size: 50),
-                ),
-              ),
-
-              // Text('setting'),
-            ],
-          ),
-          ),
-        ),
-        );  
+      )
+      );
   }
-   void _handleMenuButtonPressed() {
+     void _handleMenuButtonPressed() {
     // NOTICE: Manage Advanced Drawer state through the Controller.
     // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();

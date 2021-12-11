@@ -16,6 +16,39 @@ class Promptpay extends StatefulWidget {
 }
 
 class _PromptpayState extends State<Promptpay> {
+  bool _submit = true;
+  List ListJson = [];
+  
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getListCart();
+  }
+
+  getListCart() {
+    var cart = Provider.of<CartProvider>(context, listen: false).getCart();
+    print(cart);
+
+    cart.forEach((e) {
+      var toJson = {
+        'quantity': e.quantity,
+        'product_id': e.product_id,
+        'price': e.price,
+        'status_sale': e.status_sale,
+        // 'retail_price': e.retail_price,
+      };
+      setState(() {
+        ListJson.add(toJson);
+      });
+    });
+    // var json = jsonEncode(ListJson, toEncodable: (e) => e.toJsonAttr());
+    // print(json);
+    print(jsonEncode(ListJson));
+    String data = jsonEncode(ListJson);
+    
+    // print(jsonDecode(data)[0]);
+  }
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<CartProvider>(context, listen: false);
@@ -56,6 +89,7 @@ class _PromptpayState extends State<Promptpay> {
             onPressed: () async {
               print('payment>>');
               var data = {
+                 'cart': jsonEncode(ListJson),
                 'cash': Provider.of<CartProvider>(context, listen: false)
                     .getSum()
                     .toString(),

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pos/models/order_dertail_model.dart';
 import 'package:pos/network_api/api.dart';
+import 'package:pos/provider/cart_provider.dart';
 import 'package:pos/provider/customer_provider.dart';
 import 'package:pos/provider/printer_bluetooth.dart';
 import 'package:pos/screen/sale_wholosale.dart';
@@ -53,11 +54,13 @@ class _PaySuccessState extends State<PaySuccess> {
     // print("getBranch()['name']");
     // getBranch();
     // print(Branches);
+     Provider.of<ESC>(context, listen: false).getBranch();
      Provider.of<ESC>(context, listen: false).Print(widget.id,widget.customer_id,widget.user_id);
     // print(branch.length);
     // print(branch['name']);
 
     // print(branch['name']);
+    Provider.of<CartProvider>(context, listen: false).emptyCart();
   
   }
  @override

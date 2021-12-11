@@ -33,7 +33,7 @@ class Network {
 
   }
 
-  authData(data, apiUrl) async {
+  authData(data, apiUrl) async { // post
     try {
       var fullUrl = _url + apiUrl;
       return await http.post(Uri.parse(fullUrl),
@@ -49,7 +49,7 @@ class Network {
     }
   }
 
-  getData(data, apiUrl) async {
+  getData(data, apiUrl) async { // post
     try {
       var fullUrl = _url + apiUrl;
       await _getToken();
@@ -66,7 +66,7 @@ class Network {
     }
   }
 
-  getData2(apiUrl) async {
+  getData2(apiUrl) async { //post
     try {
       var fullUrl = _url + apiUrl;
       await _getToken();
@@ -82,7 +82,7 @@ class Network {
     }
   }
 
-  getData3(apiUrl) async {
+  getData3(apiUrl) async { //get
     try {
       var fullUrl = _url + apiUrl;
       await _getToken();

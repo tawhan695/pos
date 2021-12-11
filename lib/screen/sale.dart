@@ -762,13 +762,17 @@ class _SaleState extends State<Sale> {
                                                   // //print('qty ${snapshot.data[index].qty}');
                                                   if (snapshot.data[index].qty >
                                                       0) {
-                                                    Provider.of<CartProvider>(
+                                                  var SSt =   Provider.of<CartProvider>(
                                                             context,
                                                             listen: false)
                                                         .addCart(snapshot
                                                             .data[index].sku,1);
                                                     snapshot.data[index].qty -
                                                         1;
+
+                                                    if(SSt == false){
+                                                      showAlertDialog2(context);
+                                                    }
                                                   } else {
                                                     showAlertDialog2(context);
                                                   }
@@ -1242,6 +1246,7 @@ class _SaleState extends State<Sale> {
                           ),
                         ),
                       ),
+                    
                       Consumer(
                         builder: (BuildContext context, CartProvider order,
                             Widget? child) {

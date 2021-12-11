@@ -8,6 +8,8 @@ import 'package:pos/provider/cart_provider.dart';
 import 'package:pos/provider/customer_provider.dart';
 import 'package:pos/provider/list_order_provider.dart';
 import 'package:pos/provider/order_provider.dart';
+import 'package:pos/provider/product_provider.dart';
+import 'package:pos/provider/remove_provider.dart';
 import 'package:pos/screen/CheckConnect.dart';
 import 'package:pos/screen/Landing.dart';
 import 'package:pos/screen/change/change.dart';
@@ -18,6 +20,7 @@ import 'package:pos/screen/login.dart';
 import 'package:pos/screen/payment_widget/payment.dart';
 import 'package:pos/screen/product/product.dart';
 import 'package:pos/screen/receipt.dart';
+import 'package:pos/screen/remove_product/remove_product.dart';
 // import 'package:pos/routes/app_routes.dart';
 import 'package:pos/screen/sale.dart';
 import 'package:pos/screen/sale_wholosale.dart';
@@ -79,6 +82,12 @@ class MyApp extends StatelessWidget {
           }),
           ChangeNotifierProvider(create: (context){
             return ESC();
+          }),
+          ChangeNotifierProvider(create: (context){
+            return ProductProvider();
+          }),
+          ChangeNotifierProvider(create: (context){
+            return RemoveProvider();
           })
         ],
         child: OKToast(
@@ -106,6 +115,7 @@ class MyApp extends StatelessWidget {
               ProductScreen.RouteName: (context) => ProductScreen(),
               DashboardScreen.RouteName: (context) => DashboardScreen(),
               Landing.RouteName: (context) => Landing(),
+              RemoveProduct.RouteName: (context) => RemoveProduct(),
             },
             title: 'MTN POS',
       

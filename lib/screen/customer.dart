@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:pos/network_api/api.dart';
 import 'package:pos/provider/customer_provider.dart';
+import 'package:pos/screen/login.dart';
+// import 'package:pos/screen/page_emty.dart';
 import 'package:pos/screen/product/product.dart';
 import 'package:pos/screen/receipt.dart';
+import 'package:pos/screen/remove_product/remove_product.dart';
 import 'package:pos/screen/sale_wholosale.dart';
 import 'package:pos/screen/setting.dart';
 import 'package:pos/screen/user_widget/add_user.dart';
@@ -20,6 +24,11 @@ class Customer extends StatefulWidget {
 class _CustomerState extends State<Customer> {
   final _advancedDrawerController = AdvancedDrawerController();
   final _company = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<CustomerProvider>(context, listen: false).initCustomer();
+  }
   @override
   Widget build(BuildContext context) {
       return AdvancedDrawer(
@@ -88,6 +97,14 @@ class _CustomerState extends State<Customer> {
                 ),
                 ListTile(
                   onTap: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        RemoveProduct.RouteName, (route) => false);
+                  },
+                  leading: Icon(Icons.remove_shopping_cart),
+                  title: Text('สินค้าชำรุด',),
+                ),
+                ListTile(
+                  onTap: () {
                     Navigator.of(context).pushNamedAndRemoveUntil(Customer.RouteName, (route) => false);
                   },
                   leading: Icon(Icons.person,
@@ -119,6 +136,17 @@ class _CustomerState extends State<Customer> {
                   // style: TextStyle(color: Colors.orange),
                   ),
                 ),
+                ListTile(
+                    leading: Icon(Icons.logout),
+                    onTap: () async {
+                      var stt = await Network().logOut();
+                      //print('stt $stt');
+                      if (stt == true) {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            Login.RouteName, (route) => false);
+                      }
+                    },
+                    title: Text('ออกจากระบบ')),
                 Spacer(),
                 DefaultTextStyle(
                   style: TextStyle(

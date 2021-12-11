@@ -7,10 +7,12 @@ import 'package:pos/network_api/api.dart';
 
 class CartProvider with ChangeNotifier {
   List<CartModel> cartList = [];
-  List<ProductModel> productModel = [];
+  List<ProductModel> productList = [];
+  Map<String, ProductModel> producs = {};
   Map<String, CartModel> data = {};
 
   List<CartModel> getCart() {
+    // notifyListeners();
     return cartList;
   }
 
@@ -21,130 +23,142 @@ class CartProvider with ChangeNotifier {
   }
 
   emptyCart() {
-    data.clear();
+    data = {};
+    cartList.forEach((e) {
+      print(' delete >>id product ' + e.id.toString());
+      print('cart qty ' + e.quantity.toString());
+      print('qty ' + producs['${e.id}']!.qty.toString());
+      print('new qty ${producs['${e.id}']!.qty} + ${e.quantity} = ');
+      producs['${e.id}']!.qty += e.quantity;
+      print(' ' + producs['${e.id}']!.qty.toString());
+    });
     cartList.clear();
     notifyListeners();
   }
 
   changQty(id, qty) {
-    addCart(id, int.parse(qty));
+    if (int.parse(qty) > int.parse(producs['$id']!.qty.toString())) {
+      producs['$id']!.qty += data['$id']!.quantity;
+      addCart(id, producs['$id']!.qty);
+    } else {
+      addCart(id, qty);
+    }
   }
 
-  del(id){
+  del(id) {
     print(id);
     cartList.removeWhere((item) => item.id == id);
     print(cartList.length);
     data.remove(id);
-    // cartList.clear();
-    // data.clear();
-    // data.forEach((key, value) => cartList.add(value));
     notifyListeners();
-    //cart/delete
   }
 
   innitProduct() async {
     print('innitProduct');
     var res = await Network().getData({'sale': '0'}, '/product');
     var body = json.decode(res.body);
-    body.forEach((e) {
-      ProductModel products = ProductModel(
-          e['id'],
-          e['name'],
-          e['sku'],
-          e['unit'],
-          e['retail_price'],
-          e['wholesale_price'],
-          e['sale_price'],
-          e['qty'],
-          e['image']);
-      productModel.add(products);
-    });
-    print(productModel.length);
+    if(res.statusCode == 200){
+       for (var i = 0; i < body.length; i++) {
+      ProductModel product = ProductModel(
+          body[i]['id'],
+          body[i]['name'],
+          body[i]['sku'],
+          body[i]['unit'],
+          body[i]['retail_price'],
+          body[i]['wholesale_price'],
+          body[i]['sale_price'],
+          body[i]['qty'],
+          body[i]['image']);
+      productList.add(product);
+
+      producs["${body[i]['sku']}"] = product;
+    }
+    }
+    // notifyListeners();
   }
 
   addCart(sku, qty) async {
-    // print('addCart sku $sku ');
-    productModel.forEach((product) {
-      if (product.sku == sku) {
-        var id = product.sku;
-        var name = product.name;
-        var image = product.image;
+    bool status = false;
+    qty = int.parse(qty.toString());
+    if (producs['$sku']!.qty != 0 && producs['$sku']!.qty >= qty) {
+      if (data['$sku'] == null) {
+        var id = producs['$sku']!.sku;
+        var name = producs['$sku']!.name;
+        var image = producs['$sku']!.image;
         var price = 0.0;
-        var quantity = 1;
-        var product_id = product.id;
+        var quantity = 0;
+        producs['$sku']!.qty -= 1;
+        var product_id = producs['$sku']!.id;
         var sum = 0.0;
-        // print(product.retail_price);
-        // print(data['$sku']);
-        if (data['$sku'] == null) {
-          sum = double.parse(product.retail_price.toString());
-          // print(sum);
-          price = double.parse(product.retail_price.toString());
-          CartModel cart = CartModel(
-            id,
-            name,
-            image,
-            price,
-            quantity,
-            product_id,
-            sum,
-            'ขายปลีก',
-          );
-          data['$sku'] = cart;
-          print(data['$sku']!.name);
-          print(data['$sku']!.price);
-          print(data['$sku']!.quantity);
-          print(data['$sku']!.sum);
+        sum = double.parse(producs['$sku']!.retail_price.toString());
+        // print(sum);
+        price = double.parse(producs['$sku']!.retail_price.toString());
+        CartModel cart = CartModel(
+          id,
+          name,
+          image,
+          price,
+          1,
+          product_id,
+          sum,
+          'ขายปลีก',
+        );
+        data['$sku'] = cart;
+        // print(data['$sku']!.name);
+        // print(data['$sku']!.price);
+        // print(data['$sku']!.quantity);
+        // print(data['$sku']!.sum);
+      } else {
+        var price = 0.0;
+        if (qty == 1) {
+          // print("#######3");
+          // print("data['$sku']!.quantity = qty : ${data['$sku']!.quantity}");
+          data['$sku']!.quantity += 1;
+          producs['$sku']!.qty -= 1;
+          print('addCart sku $sku  QTY : ${producs['$sku']!.qty}');
+          // print("data['$sku']!.quantity = qty : ${data['$sku']!.quantity}");
         } else {
-          if (qty == 1) {
-            data['$sku']!.quantity += 1;
-          } else {
-            data['$sku']!.quantity = qty;
-          }
-
-          // อย่าลืมทำการตั้งค่าตัวนี้ด้วยเด้อตัวที่กำหนดว่าจะขายปลีกขายส่ง
-
-          if (data['$sku']!.quantity >= 10) {
-            data['$sku']!.price =
-                double.parse(product.wholesale_price.toString());
-            data['$sku']!.status_sale = 'ขายส่ง';
-          } else {
-            price = double.parse(product.retail_price.toString()); // ขายปลีก
-
-          }
-          data['$sku']!.sum = data['$sku']!.price * data['$sku']!.quantity;
-
-          //  var cc =  data['$sku']!.name;
-          print(data['$sku']!.name);
-          print(data['$sku']!.price);
-          print(data['$sku']!.quantity);
-          print(data['$sku']!.sum);
-          //  var cc2 = data['$sku']!.name = "Unknown";
-          //  print(cc2);
-
-          // sum += price;
-          // quantity += 1;
-          // // print(sum);
-          // CartModel cart = CartModel(
-          //    data['$sku']!.id,
-          //   data['$sku']!.name,
-          //   data['$sku']!.image,
-          //   price,
-          //   quantity,
-          //   data['$sku']!.product_id,
-          //   sum,
-          // );
-          // data['$sku'] = cart;
+          data['$sku']!.quantity = qty;
+          producs['$sku']!.qty -= qty;
+          print('addCart sku $sku  QTY : ${producs['$sku']!.qty}');
+          // print("data['$sku']!.quantity = qty : $qty ");
         }
-        // cartList.add(product);
 
+        // อย่าลืมทำการตั้งค่าตัวนี้ด้วยเด้อตัวที่กำหนดว่าจะขายปลีกขายส่ง
+
+        if (data['$sku']!.quantity >= 10) {
+          data['$sku']!.price =
+              double.parse(producs['$sku']!.wholesale_price.toString());
+          data['$sku']!.status_sale = 'ขายส่ง';
+        } else {
+          price =
+              double.parse(producs['$sku']!.retail_price.toString()); // ขายปลีก
+
+        }
+        data['$sku']!.sum = data['$sku']!.price * data['$sku']!.quantity;
+        //   print(data['$sku']!.name);
+        // print(data['$sku']!.price);
+        // print(data['$sku']!.quantity);
+        // print(data['$sku']!.sum);
       }
-    });
-    print(data.length);
+      print('status ยังเหลือ ${producs['$sku']!.qty} ');
+    } else {
+      print('status หมด ${producs['$sku']!.qty}');
+    }
+
+    // // print(data.length);
     cartList.clear();
     data.forEach((key, value) => cartList.add(value));
-    print('cartList.length');
-    print(cartList.length);
-    print(cartList);
+    // print('cartList.length');
+    // print(cartList.length);
+    // print(cartList);
+    if (producs['$sku']!.qty <= 0 ){
+        status=false;
+    }else{
+        status=true;
+    }
+     print('status  ${status}');
     notifyListeners();
+    return status;
   }
 }

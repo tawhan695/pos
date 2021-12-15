@@ -42,12 +42,14 @@ class ProductProvider with ChangeNotifier {
 
    getName(id) {
     var name;
+    var img;
     productModel.forEach((product) {
       if (product.id == id) {
         name = product.name;
+        img = product.image;
       }
     });
-    return name;
+    return {'name':name,'img':img};
   }
 
   void addTransaction(ProductModel statement) async {

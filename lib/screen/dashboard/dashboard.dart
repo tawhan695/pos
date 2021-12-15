@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:pos/models/product_model.dart';
 import 'package:pos/network_api/api.dart';
+import 'package:pos/provider/product_provider.dart';
+import 'package:provider/provider.dart';
 
 class DashboardScreen extends StatefulWidget {
   DashboardScreen({Key? key}) : super(key: key);
@@ -20,6 +22,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   var product;
   List PRODUCT = [];
   var search = '';
+  String URL = 'https://tawhan.xyz/';
   bool Issearch = false;
   void getWallet() async {
     var res = await Network().getData3('/wallet');
@@ -63,7 +66,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   e['qty_2'],
                   e['price_2'],
                   e['sum_qty'],
-                  e['sum_price'],]
+                  e['sum_price'],
+                  e['img'],
+                  ]
                  );
         },
       );
@@ -316,7 +321,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 .map(
                                   (e) => DataRow(
                                     cells: [
-                                      DataCell(Text('${e[0]}')),
+                                      DataCell(Image.network(
+                                  "${URL + e[8]}",
+                                  fit: BoxFit.contain,
+                                  width: 50,
+                                  // height: 200,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                        child: CircularProgressIndicator());
+                                  },
+                                  errorBuilder:
+                                      (context, exception, stackTrack) => Icon(
+                                    Icons.error,
+                                  ),
+                                ),),
                                       DataCell(Text(
                                         e[1].length > 11 ? '${e[1].substring(0,10)}..'
                                         :'${e[1]}')
@@ -327,6 +347,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       DataCell(Text('${e[5]}')),
                                       DataCell(Text('${e[6]}')),
                                       DataCell(Text('${e[7]}')),
+                                      
                                       ],
                                   ),
                                 )

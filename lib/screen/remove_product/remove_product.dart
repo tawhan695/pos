@@ -47,6 +47,7 @@ class _RemoveProductState extends State<RemoveProduct> {
   var current_page = 0;
   int ii = 1;
   List<ProductModel> _products2 = [];
+  String URL = 'https://tawhan.xyz/';
 
   oderPage() async {
     final res = await Network().getData3('/product/defective');
@@ -81,15 +82,16 @@ class _RemoveProductState extends State<RemoveProduct> {
     print("maxPage $maxPage");
     Provider.of<RemoveProvider>(context, listen: false).initRemove(Nnext);
   }
-  getDate(date){
+
+  getDate(date) {
     date = '2021-01-26T03:17:00.000000Z';
-DateTime parseDate =
-    new DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
-var inputDate = DateTime.parse(parseDate.toString());
-var outputFormat = DateFormat('MM/dd/yyyy hh:mm ');
-var outputDate = outputFormat.format(inputDate);
-print(outputDate);
-return outputDate;
+    DateTime parseDate =
+        new DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date);
+    var inputDate = DateTime.parse(parseDate.toString());
+    var outputFormat = DateFormat('MM/dd/yyyy hh:mm ');
+    var outputDate = outputFormat.format(inputDate);
+    print(outputDate);
+    return outputDate;
   }
 
   @override
@@ -101,12 +103,12 @@ return outputDate;
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     // setproduct();
-    Provider.of<ProductProvider>(context, listen: false).initData('0','all');
+    Provider.of<ProductProvider>(context, listen: false).initData('0', 'all');
 
     Provider.of<RemoveProvider>(context, listen: false).initRemove(0);
     // getName(28);
     setState(() {
-    // _products2 = Provider.of<ProductProvider>(context, listen: false).initData('0','all');
+      // _products2 = Provider.of<ProductProvider>(context, listen: false).initData('0','all');
     });
   }
 
@@ -135,11 +137,11 @@ return outputDate;
   //   //   _page = body['current_page'];
   //   //   print('_page $_page');
   //   // });
-    
+
   //   return data;
   // }
   // setproduct()  {
-  //   // product =  
+  //   // product =
   //   // print(product);
   // // _product.forEach((e){
   // //   // print(e.name);
@@ -149,22 +151,20 @@ return outputDate;
   // // });
   // }
 
-  getName(id){
+  getName(id) {
     var name = '';
-    for(var i=0; i <product.length; i++){
+    for (var i = 0; i < product.length; i++) {
       // print(product[i].name);
       // print(name+'$id');
-      if(product[i].id == id ){
-      name = product[i];
-      // print(id);
+      if (product[i].id == id) {
+        name = product[i];
+        // print(id);
         break;
       }
     }
     return name;
   }
 
-
-  
   Future<void> initConnectivity() async {
     ConnectivityResult result = ConnectivityResult.none;
     try {
@@ -413,86 +413,98 @@ return outputDate;
             //   ),
             // ),
 
-            Consumer(
-                builder: (context, RemoveProvider remove,Widget) {
-                   var data = remove.getRemove();
-                   ii=1;
-                   if(data.length > 0){
-                    return Container(
-                      // padding: EdgeInsets.only(left:50,right:50),
-                      child: DataTable(
-                        columns: [
-                          DataColumn(
-                            label: Text(
-                              '#',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'สินค้า',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'สถานะ',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'จำนวนเสียหาย',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'วันเดือนปี/เวลา',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                        rows: data
-                            .map(
-                              (e) => DataRow(
-                        
-                                cells: [
-                                  DataCell(Text('${ii++}')),
-                                  // DataCell(Text('${}')),
-                                  // DataCell(Text("${ product['$id']}")),
-                                  DataCell(Text('${Provider.of<ProductProvider>(context, listen: false).getName(e.product_id)}')),
-                                  DataCell(Text('${e.status}')),
-                                  DataCell(Text('${e.qty}')),
-                                  DataCell(Text(getDate(e.date))),
-                                  // DataCell(Text(e.date)),
-                                  // DataCell(Text(DateFormat('yyyy/MM/dd HH:mm:ss').parse(_data[i]['created_at']).toString()),),
-                                  // print(); 
-                                  
-                                ],
+            Consumer(builder: (context, RemoveProvider remove, Widget) {
+              var data = remove.getRemove();
+              ii = 1;
+              if (data.length > 0) {
+                return Container(
+                  // padding: EdgeInsets.only(left:50,right:50),
+                  child: DataTable(
+                    columns: [
+                      DataColumn(
+                        label: Text(
+                          '#',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'สินค้า',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'สถานะ',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'จำนวนเสียหาย',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          'วันเดือนปี/เวลา',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                    rows: data
+                        .map(
+                          (e) => DataRow(
+                            cells: [
+                              DataCell(
+                                Image.network(
+                                  "${URL + Provider.of<ProductProvider>(context, listen: false).getName(e.product_id)['img']}",
+                                  fit: BoxFit.contain,
+                                  width: 50,
+                                  // height: 200,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                        child: CircularProgressIndicator());
+                                  },
+                                  errorBuilder:
+                                      (context, exception, stackTrack) => Icon(
+                                    Icons.error,
+                                  ),
+                                ),
                               ),
-                              
-                            )
-                            .toList(),
-                            
-                        // Text(snapshot.data[0]['status']
-                      ),
-                    );
-                         
-                  
-                  } else {
-                    return Container(
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  }
-                }),
+                              // DataCell(Text('${}')),
+                              // DataCell(Text("${ product['$id']}")),
+                              DataCell(Text(
+                                  '${Provider.of<ProductProvider>(context, listen: false).getName(e.product_id)['name']}')),
+                              DataCell(Text('${e.status}')),
+                              DataCell(Text('${e.qty}')),
+                              DataCell(Text(getDate(e.date))),
+                              // DataCell(Text(e.date)),
+                              // DataCell(Text(DateFormat('yyyy/MM/dd HH:mm:ss').parse(_data[i]['created_at']).toString()),),
+                              // print();
+                            ],
+                          ),
+                        )
+                        .toList(),
+
+                    // Text(snapshot.data[0]['status']
+                  ),
+                );
+              } else {
+                return Container(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+            }),
             Container(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,

@@ -188,27 +188,28 @@ class _SaleWholosaleState extends State<SaleWholosale> {
       },
     );
   }
-start() async {
-  //  await Provider.of<ESC>(context, listen: false).getBranch();
-  //  await Provider.of<ESC>(context, listen: false).startScanDevices();
-  //  await Provider.of<ESC>(context, listen: false).getPrintter();
-   
-  //   var data = await Provider.of<ESC>(context, listen: false).getESC();
-  //   print('Connect $data');
+
+  start() async {
+    //  await Provider.of<ESC>(context, listen: false).getBranch();
+    //  await Provider.of<ESC>(context, listen: false).startScanDevices();
+    //  await Provider.of<ESC>(context, listen: false).getPrintter();
+
+    //   var data = await Provider.of<ESC>(context, listen: false).getESC();
+    //   print('Connect $data');
   }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    
-  //  start();
+
+    //  start();
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     // Provider.of<OrderProvider>(context, listen: false).initCart();
     print('CartProvider');
     Provider.of<CartProvider>(context, listen: false).innitProduct();
-    Provider.of<ProductProvider>(context, listen: false).initData('0','all');
+    Provider.of<ProductProvider>(context, listen: false).initData('0', 'all');
     Provider.of<ESC>(context, listen: false).getPrintter();
   }
 
@@ -264,7 +265,6 @@ start() async {
   bool Hsearch = true;
   @override
   Widget build(BuildContext context) {
-     
     return AdvancedDrawer(
       backdropColor: Color(0xffFF8F33),
       controller: _advancedDrawerController,
@@ -331,7 +331,9 @@ start() async {
                         RemoveProduct.RouteName, (route) => false);
                   },
                   leading: Icon(Icons.remove_shopping_cart),
-                  title: Text('สินค้าชำรุด',),
+                  title: Text(
+                    'สินค้าชำรุด',
+                  ),
                 ),
                 ListTile(
                   onTap: () {
@@ -745,7 +747,6 @@ start() async {
                                       ),
                                       itemCount: snapshot.data.length,
                                       itemBuilder: (BuildContext ctx, index) {
-                                        
                                         return Container(
                                           child: Container(
                                             alignment: Alignment.center,
@@ -782,21 +783,26 @@ start() async {
                                                   // if (provider.e429()) {
                                                   //   showAlertDialog(context);
                                                   // }
-                                                  print('qty ${snapshot.data[index].qty}');
+                                                  print(
+                                                      'qty ${snapshot.data[index].qty}');
                                                   if (snapshot.data[index].qty >
                                                       0) {
-                                                    var SSt = await Provider.of<CartProvider>(
+                                                    var SSt = await Provider.of<
+                                                                CartProvider>(
                                                             context,
                                                             listen: false)
-                                                        .addCart(snapshot
-                                                            .data[index].sku,1);
-                                                   setState(()  {
-                                                        print('sst $SSt');
-                                                      if(SSt == false){
-                                                      showAlertDialog2(context);
-                                                    }
-                                                      // snapshot.data[index].qty -= 1;      
-                                                   });
+                                                        .addCart(
+                                                            snapshot.data[index]
+                                                                .sku,
+                                                            1);
+                                                    setState(() {
+                                                      print('sst $SSt');
+                                                      if (SSt == false) {
+                                                        showAlertDialog2(
+                                                            context);
+                                                      }
+                                                      // snapshot.data[index].qty -= 1;
+                                                    });
 
                                                     // snapshot.data[index].qty -
                                                     //     1;
@@ -871,12 +877,12 @@ start() async {
                                                                 : Text(
                                                                     snapshot.data[index].name.length >
                                                                             30
-                                                                        ? '(หมด)'+snapshot.data[index].name.substring(0,
+                                                                        ? '(หมด)' +
+                                                                            snapshot.data[index].name.substring(0,
                                                                                 30) +
                                                                             '..'
-                                                                        : '(หมด)'+snapshot
-                                                                            .data[index]
-                                                                            .name,
+                                                                        : '(หมด)' +
+                                                                            snapshot.data[index].name,
                                                                     style: const TextStyle(
                                                                         fontSize:
                                                                             20,
@@ -1033,8 +1039,14 @@ start() async {
                                       color: Color(0xffFE7300),
                                       onPressed: () {
                                         Provider.of<CartProvider>(context,
-                                                listen: false)
+                                                listen: false)  
                                             .emptyCart();
+                                        Provider.of<CartProvider>(context,
+                                                listen: false)
+                                            .innitProduct();
+                                        Provider.of<ProductProvider>(context,
+                                                listen: false)
+                                            .initData('0', 'all');
                                       },
                                       icon: Icon(
                                         Icons.delete_forever_sharp,
@@ -1177,31 +1189,28 @@ start() async {
                                                                             .green),
                                                                   ),
                                                                   // Spacer(),
-                                                                  data.sum  < 10000 ?
-                                                                  Container(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .topLeft,
-                                                                    padding: EdgeInsets
-                                                                        .only(
-                                                                            left:
-                                                                                20),
-                                                                    child: Text(
-                                                                      ' ฿${data.sum}',
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              19,
-                                                                          fontWeight: FontWeight
-                                                                              .bold,
-                                                                          color:
-                                                                              Colors.black),
-                                                                    ),
-                                                                  ):Container(),
+                                                                  data.sum <
+                                                                          10000
+                                                                      ? Container(
+                                                                          alignment:
+                                                                              Alignment.topLeft,
+                                                                          padding:
+                                                                              EdgeInsets.only(left: 20),
+                                                                          child:
+                                                                              Text(
+                                                                            ' ฿${data.sum}',
+                                                                            style: TextStyle(
+                                                                                fontSize: 19,
+                                                                                fontWeight: FontWeight.bold,
+                                                                                color: Colors.black),
+                                                                          ),
+                                                                        )
+                                                                      : Container(),
                                                                 ],
-                                                              ),  
+                                                              ),
                                                             ),
-                                                            data.sum  >= 10000 ?
-                                                            Container(
+                                                            data.sum >= 10000
+                                                                ? Container(
                                                                     alignment:
                                                                         Alignment
                                                                             .topLeft,
@@ -1219,7 +1228,8 @@ start() async {
                                                                           color:
                                                                               Colors.black),
                                                                     ),
-                                                                  ): Container(),
+                                                                  )
+                                                                : Container(),
                                                           ],
                                                         ),
                                                       ),
@@ -1282,7 +1292,7 @@ start() async {
                                         'รอการขาย',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 40,
+                                            fontSize: 35,
                                             color: Colors.black54),
                                       ),
                                     ],
@@ -1294,11 +1304,9 @@ start() async {
                           ),
                         ),
                       ),
-                    
                       Consumer(
-                        builder: (BuildContext context, CartProvider order,
-                            Widget) {
-                          
+                        builder:
+                            (BuildContext context, CartProvider order, Widget) {
                           return Container(
                             height: 60,
                             padding: EdgeInsets.only(right: 20, top: 10),

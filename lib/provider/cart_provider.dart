@@ -41,11 +41,13 @@ class CartProvider with ChangeNotifier {
       producs['$id']!.qty += data['$id']!.quantity;
       addCart(id, producs['$id']!.qty);
     } else {
+      producs['$id']!.qty += data['$id']!.quantity;
       addCart(id, qty);
     }
   }
 
   del(id) {
+    producs['$id']!.qty += data['$id']!.quantity;
     print(id);
     cartList.removeWhere((item) => item.id == id);
     print(cartList.length);

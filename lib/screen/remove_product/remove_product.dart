@@ -463,7 +463,7 @@ class _RemoveProductState extends State<RemoveProduct> {
                             cells: [
                               DataCell(
                                 Image.network(
-                                  "${URL + Provider.of<ProductProvider>(context, listen: false).getName(e.product_id)['img']}",
+                                  "${URL + Provider.of<ProductProvider>(context, listen: false).getName(e.product_id)['img'].toString()}",
                                   fit: BoxFit.contain,
                                   width: 50,
                                   // height: 200,

@@ -138,7 +138,7 @@ class ESC with ChangeNotifier {
     print(Branches[0]);
     print(Branches[1]);
     // List branch = await getBranch();
-    //  print('getBranch ${branch}');
+     print('or :${or}');
     //  print('getBranch ${branch[0]}');
     //  print('getBranch ${branch[1]}');
 
@@ -204,40 +204,51 @@ class ESC with ChangeNotifier {
     var res = await Network().getData({'id': '$id'}, '/order/detail');
     if (res != 'error') {
       var body = json.decode(res.body)['detail'];
-      // print(body);
-      body.forEach((e) async {
-        // print(e);
-        OrdreDetail item = OrdreDetail(
-          e['unit'],
-          e['id'],
-          e['product_id'],
-          e['order_id'],
-          e['name'],
-          e['price'],
-          e['totol'],
-          e['qty'],
-          e['created_at'],
+      print('body : $body');
+      print('body : ${body.length}');
+      for (var i = 0; i < body.length; i++){
+        print('${body[i]['name']}');
+         OrdreDetail item = OrdreDetail(
+          body[i]['unit'],
+          body[i]['id'],
+          body[i]['product_id'],
+          body[i]['order_id'],
+          body[i]['name'],
+          body[i]['price'],
+          body[i]['totol'],
+          body[i]['qty'],
+          body[i]['created_at'],
         );
         _detail.add(item);
-        //  Uint8List  vv;
-        //  vv =getUint8List(e['name']);
-        //  print(vv);
-        //  _detail2.add(
-        //    vv
-        //   );
-      });
+      }
+      // body.forEach((e) async {
+      //   print(' e[name] ${e['name']}');
+      //   // print(' e[name] ${e['name']}');
+      //   OrdreDetail item = OrdreDetail(
+      //     e['unit'],
+      //     e['id'],
+      //     e['product_id'],
+      //     e['order_id'],
+      //     e['name'],
+      //     e['price'],
+      //     e['totol'],
+      //     e['qty'],
+      //     e['created_at'],
+      //   );
+      //   _detail.add(item);
+      // });
     }
     listData = _detail2;
-    print('_detail');
-    print(_detail.length);
-    print('_detail2');
-    print(_detail2.length);
-    // listData =  _detail;
+    // print('_detail');
+    print(_detail);
+    // print('_detail2');
+    // print(_detail2.length);
     return _detail;
   }
 
   Future<List<int>> ticket(PaperSize paper, CapabilityProfile profile,
       order_detail, order, customer, user, branch) async {
+    print('order_detail ${order_detail.length}');
     final Generator generator = Generator(paper, profile);
     // Uint8List encThai41 = await CharsetConverter.encode('TIS-620', 'สวัวสดีนี้คือการทดสอบภาษา81ไทย');
     List<int> bytes = [];
@@ -284,6 +295,9 @@ class ESC with ChangeNotifier {
     ]);
 
     for (int i = 0; i < order_detail.length; i++) {
+          print('name $i: ${order_detail[i].name}');
+          print('qty $i : ${order_detail[i].qty}');
+          print('price $i : ${order_detail[i].price}');
       bytes += generator.row([
         PosColumn(
           textEncoded: await CharsetConverter.encode(
@@ -360,6 +374,8 @@ class ESC with ChangeNotifier {
         styles: PosStyles(align: PosAlign.center));
     bytes += generator.feed(2);
     bytes += generator.cut();
+    bytes += generator.drawer();
+
     return bytes;
   }
 }

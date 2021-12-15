@@ -30,7 +30,7 @@ class _CashState extends State<Cash> {
 
   getListCart() {
     var cart = Provider.of<CartProvider>(context, listen: false).getCart();
-    print(cart);
+    print('cart :>>>> $cart');
 
     cart.forEach((e) {
       var toJson = {
@@ -123,7 +123,7 @@ class _CashState extends State<Cash> {
                     ),
                     onPressed: _submit
                         ? () async {
-                            print(_controller.text);
+                            print('jsonEncode(ListJson) : ${jsonEncode(ListJson)}');
                             var data = {
                               'cart': jsonEncode(ListJson),
                               'cash': _controller.text,

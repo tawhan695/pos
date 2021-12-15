@@ -28,7 +28,7 @@ class _OrderDetailState extends State<OrderDetail> {
       var body = json.decode(res.body)['detail'];
       // print(body);
       body.forEach((e) {
-        // print(e);
+        print(e);
         OrdreDetail item = OrdreDetail(
           e['unit'],
           e['id'],
@@ -205,7 +205,8 @@ class _OrderDetailState extends State<OrderDetail> {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-                  if (listData.length > 1) {
+                  print(listData.length);
+                  if (listData.length > 0) {
                     return Container(
                       child: Row(
                         children: [

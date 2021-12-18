@@ -23,6 +23,7 @@ class CartProvider with ChangeNotifier {
   }
 
   emptyCart() {
+   try {
     data = {};
     cartList.forEach((e) {
       print(' delete >>id product ' + e.id.toString());
@@ -32,18 +33,33 @@ class CartProvider with ChangeNotifier {
       producs['${e.id}']!.qty += e.quantity;
       print(' ' + producs['${e.id}']!.qty.toString());
     });
+   }catch(e){
+     print('error $e');
+    cartList.clear();
+   }
     cartList.clear();
     notifyListeners();
   }
+  setEmpty(){
+    data.clear();
+    cartList.clear();
+    // notifyListeners();
+  }
 
   changQty(id, qty) {
-    if (int.parse(qty) > int.parse(producs['$id']!.qty.toString())) {
+   try{
+      if (int.parse(qty) > int.parse(producs['$id']!.qty.toString())) {
       producs['$id']!.qty += data['$id']!.quantity;
       addCart(id, producs['$id']!.qty);
     } else {
       producs['$id']!.qty += data['$id']!.quantity;
       addCart(id, qty);
+
     }
+   }catch (e) {
+     print('error $e');
+   }
+   notifyListeners();
   }
 
   del(id) {
@@ -80,7 +96,8 @@ class CartProvider with ChangeNotifier {
   }
 
   addCart(sku, qty) async {
-    bool status = false;
+    try {
+      bool status = false;
     qty = int.parse(qty.toString());
     if (producs['$sku']!.qty != 0 && producs['$sku']!.qty >= qty) {
       if (data['$sku'] == null) {
@@ -162,5 +179,8 @@ class CartProvider with ChangeNotifier {
      print('status  ${status}');
     notifyListeners();
     return status;
+    }catch(e){
+      print('error: $e');
+    }
   }
 }

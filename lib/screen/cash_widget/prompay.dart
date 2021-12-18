@@ -18,12 +18,15 @@ class Promptpay extends StatefulWidget {
 class _PromptpayState extends State<Promptpay> {
   bool _submit = true;
   List ListJson = [];
+  var sum;
   
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getListCart();
+     var provider = Provider.of<CartProvider>(context, listen: false);
+    sum = provider.getSum();
   }
 
   getListCart() {
@@ -49,10 +52,10 @@ class _PromptpayState extends State<Promptpay> {
     
     // print(jsonDecode(data)[0]);
   }
+
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<CartProvider>(context, listen: false);
-    var sum = provider.getSum();
+   
     return Column(
       children: [
         Padding(
@@ -113,7 +116,8 @@ class _PromptpayState extends State<Promptpay> {
               // pushNamedAndRemoveUntil คำสั่งนี้ไม่มีปุ้มย้อนกลับ
               print(body);
               if (body['success']) {
-                Navigator.pushAndRemoveUntil(
+               try {
+                  Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
                       builder: (context) => PaySuccess(
@@ -127,6 +131,9 @@ class _PromptpayState extends State<Promptpay> {
                     (route) => false);
                 Provider.of<CustomerProvider>(context, listen: false)
                     .emtySelect();
+               }catch (e) {
+                 print('error: $e');
+               }
               } else {
                 print('ไม่สำเร็จ');
               }

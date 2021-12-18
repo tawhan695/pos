@@ -78,7 +78,9 @@ class ESC with ChangeNotifier {
 
   getPrintter() async {
     print('getPrintter ');
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    if(_devices_select == null) {
+      print('กำลังเชื่อมต่อเครื่องปริ้น...');
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
     var printer = jsonDecode(localStorage.getString('printer').toString());
     print('get $printer');
     if (printer != null) {
@@ -95,6 +97,9 @@ class ESC with ChangeNotifier {
       }
     }else{
       print('printer = $printer');
+    }
+    }else{
+      print('เชื่อมต่อเครื่องปริ้นแล้ว');
     }
 
     //  print(printer['address']);
@@ -155,9 +160,17 @@ class ESC with ChangeNotifier {
     }
     final profile = await CapabilityProfile.load();
     // TEST PRINT
-    final PosPrintResult res = await printerManager.printTicket(
+   try { final PosPrintResult res = await printerManager.printTicket(
         await ticket(Paper, profile, or, o1, customer, user, Branches));
-    showToast(res.msg);
+    if (res.msg.toString() == 'success'){
+      showToast('สถานะการทำงาน :'+res.msg.toString());
+
+    }else{
+      showToast('ไม่ได้เชื่อมต่อเครื่องพิมพ์ :'+res.msg.toString());
+    }
+    }catch(e){
+      return null;
+    }
   }
 
   getUint8List(String data) async {

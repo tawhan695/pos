@@ -60,7 +60,7 @@ class _PaySuccessState extends State<PaySuccess> {
     // print(branch['name']);
 
     // print(branch['name']);
-    Provider.of<CartProvider>(context, listen: false).emptyCart();
+    
   
   }
  @override
@@ -69,10 +69,23 @@ class _PaySuccessState extends State<PaySuccess> {
     super.didChangeDependencies();
    
   // Provider.of<CustomerProvider>(context, listen: false).getName(widget.customer_id);
+  
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    // try {
+
+    // }catch (e) {
+    //   print('error $e');
+    //       }
+    
   }
  
   @override
   Widget build(BuildContext context) {
+    Provider.of<CartProvider>(context, listen: false).setEmpty();
     return Scaffold(
       appBar: AppBar(
         title: Text(''),

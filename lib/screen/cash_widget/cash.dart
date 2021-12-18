@@ -20,16 +20,21 @@ class Cash extends StatefulWidget {
 class _CashState extends State<Cash> {
   bool _submit = true;
   List ListJson = [];
-  
+  var sum;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getListCart();
+    setState(() {
+   sum =  Provider.of<CartProvider>(context, listen: false).getSum().toString();
+      
+    });
   }
 
   getListCart() {
-    var cart = Provider.of<CartProvider>(context, listen: false).getCart();
+   try {
+      var cart = Provider.of<CartProvider>(context, listen: false).getCart();
     print('cart :>>>> $cart');
 
     cart.forEach((e) {
@@ -48,16 +53,19 @@ class _CashState extends State<Cash> {
     // print(json);
     print(jsonEncode(ListJson));
     String data = jsonEncode(ListJson);
-    
+   }
+    catch (e){
+      print('error $e');
+    }
     // print(jsonDecode(data)[0]);
   }
 
   final _controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<CartProvider>(context, listen: false);
-    var sum = provider.getSum();
-    _controller.text = sum.toString();
+    // var provider = Provider.of<CartProvider>(context, listen: false);
+    // var sum = provider.getSum();
+    _controller.text = sum;
     return SingleChildScrollView(
       child: Container(
         child: Padding(

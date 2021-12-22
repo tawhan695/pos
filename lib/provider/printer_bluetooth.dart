@@ -38,10 +38,11 @@ class ESC with ChangeNotifier {
 
   stopScanDevices() {
     print('_stopScanDevices');
-    printerManager.stopScan();
+    // printerManager.stopScan();
   }
 
   selectDevices() {
+     print('selectDevices');
     printerManager.scanResults.listen((devices) async {
       print('UI: Devices found ${devices.length}');
       _devices = devices;
@@ -50,6 +51,7 @@ class ESC with ChangeNotifier {
   }
 
   intESC(PrinterBluetooth printer) async {
+    print('intESC');
     setPrinter(printer);
     _devices_select = printer;
     print(printer.name);
@@ -91,7 +93,7 @@ class ESC with ChangeNotifier {
           if (e.address == printer['address']) {
             print('connect .. to  ${printer['address']}');
             _devices_select = e;
-
+            print('connect .. สำเร็จ');  
           }
         });
       }
@@ -156,13 +158,14 @@ class ESC with ChangeNotifier {
     try {
       printerManager.selectPrinter(_devices_select);
     } catch (e) {
+      // printerManager.
       showToast('ไม่ได้เชื่อมต่อเครื่องปริ้น');
     }
     final profile = await CapabilityProfile.load();
     // TEST PRINT
    try { final PosPrintResult res = await printerManager.printTicket(
         await ticket(Paper, profile, or, o1, customer, user, Branches));
-    if (res.msg.toString() == 'success'){
+    if (res.msg.toString() == 'Success'){
       showToast('สถานะการทำงาน :'+res.msg.toString());
 
     }else{
@@ -192,11 +195,11 @@ class ESC with ChangeNotifier {
       print(newStr); // 2019-04-05 14:00:51.000
       ListOrder_model model = ListOrder_model(
           body['id'],
-          body['cash_totol'],
-          body['cash'],
-          body['discount'],
-          body['net_amount'],
-          body['change'],
+          double.parse(body['cash_totol'].toString()),
+          double.parse(body['cash'].toString()),
+          double.parse(body['discount'].toString()),
+          double.parse(body['net_amount'].toString()),
+          double.parse(body['change'].toString()),
           body['status'],
           body['status_sale'],
           body['paid_by'],
@@ -227,8 +230,8 @@ class ESC with ChangeNotifier {
           body[i]['product_id'],
           body[i]['order_id'],
           body[i]['name'],
-          body[i]['price'],
-          body[i]['totol'],
+          double.parse(body[i]['price'].toString()),
+          double.parse(body[i]['totol'].toString()),
           body[i]['qty'],
           body[i]['created_at'],
         );
@@ -267,6 +270,16 @@ class ESC with ChangeNotifier {
     List<int> bytes = [];
     // Print image
     // bytes += generator.image(image);
+      bytes += generator.text('MTN',
+      styles: PosStyles(
+        height: PosTextSize.size3,
+        width: PosTextSize.size5,
+        bold: true,
+         align: PosAlign.center,
+      ));
+    // bytes += generator.textEncoded(
+    //     await CharsetConverter.encode('TIS-620', 'M T N'),
+    //     styles: PosStyles(bold: true, align: PosAlign.center,)); //LOGO
     bytes += generator.textEncoded(
         await CharsetConverter.encode('TIS-620', '${branch[0]}'),
         styles: PosStyles(bold: true, align: PosAlign.center)); //ชื่อร้าน สาขา
@@ -323,7 +336,7 @@ class ESC with ChangeNotifier {
         PosColumn(
           textEncoded: await CharsetConverter.encode(
               'TIS-620', '${order_detail[i].name}'),
-          width: 6,
+          width: 5,
           styles: PosStyles(
             align: PosAlign.left,
           ),
@@ -339,7 +352,7 @@ class ESC with ChangeNotifier {
         PosColumn(
           textEncoded: await CharsetConverter.encode(
               'TIS-620', '${order_detail[i].totol}'),
-          width: 2,
+          width: 3,
           styles: PosStyles(
             align: PosAlign.right,
           ),
@@ -369,26 +382,31 @@ class ESC with ChangeNotifier {
     bytes += generator.hr();
     bytes += generator.textEncoded(
         await CharsetConverter.encode('TIS-620', 'ลูกค้า :$customer'),
-        styles: PosStyles(align: PosAlign.center));
+        styles: PosStyles(align: PosAlign.left));
     bytes += generator.textEncoded(
         await CharsetConverter.encode('TIS-620', 'พนักงานขาย : $user'),
-        styles: PosStyles(align: PosAlign.center));
+        styles: PosStyles(align: PosAlign.left));
     final now = DateTime.now();
     final formatter = DateFormat('MM/dd/yyyy H:m');
     final String timestamp = formatter.format(now);
     bytes += generator.textEncoded(
-        await CharsetConverter.encode('TIS-620', 'วันเวลา : $timestamp'),
-        styles: PosStyles(align: PosAlign.center));
+        await CharsetConverter.encode('TIS-620', 'วันเวลา : ${order[0].created_at}'),
+        styles: PosStyles(align: PosAlign.left));
+    bytes += generator.textEncoded(
+        await CharsetConverter.encode('TIS-620', 'เลขที่ใบเสร็จ : ${order[0].id}'),
+        styles: PosStyles(align: PosAlign.left));
     bytes += generator.hr();
     bytes += generator.feed(1);
 
     bytes += generator.textEncoded(
         await CharsetConverter.encode('TIS-620', 'ขอบพระคุณที่มาอุดหนุนนะคะ'),
         styles: PosStyles(align: PosAlign.center));
-    bytes += generator.feed(2);
+    // bytes += generator.feed(1);
     bytes += generator.cut();
     bytes += generator.drawer();
-
+    bytes += generator.beep();
+    // bytes += generator.disconnect();
+    // bytes += generator.;
     return bytes;
   }
 }

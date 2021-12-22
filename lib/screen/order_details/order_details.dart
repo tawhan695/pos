@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:pos/models/order_dertail_model.dart';
 import 'package:pos/models/order_model.dart';
 import 'package:pos/network_api/api.dart';
 import 'package:pos/provider/customer_provider.dart';
+import 'package:pos/provider/printer_bluetooth.dart';
 import 'package:pos/screen/receipt.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,6 +23,8 @@ class OrderDetail extends StatefulWidget {
 class _OrderDetailState extends State<OrderDetail> {
   List<OrdreDetail> listData = [];
   var USER = '';
+  var USER_id;
+  bool print_status = false;
   detail(id) async {
     List<OrdreDetail> _detail = [];
     var res = await Network().getData({'id': '$id'}, '/order/detail');
@@ -54,6 +58,7 @@ class _OrderDetailState extends State<OrderDetail> {
     print(user['name']);
     setState(() {
       USER = user['name'];
+      USER_id = user['id'];
     });
   }
 
@@ -85,7 +90,7 @@ class _OrderDetailState extends State<OrderDetail> {
           if (links == true) {
             Navigator.of(context)
                 .pushNamedAndRemoveUntil(Receipt.RouteName, (route) => false);
-          }else{
+          } else {
             Navigator.of(context).pop();
           }
         }
@@ -137,7 +142,6 @@ class _OrderDetailState extends State<OrderDetail> {
               ),
             ),
           ],
-       
         ),
         body: Padding(
           padding: const EdgeInsets.all(30.0),
@@ -325,6 +329,38 @@ class _OrderDetailState extends State<OrderDetail> {
                     style: TextStyle(
                       fontSize: 20,
                     )),
+                Container(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          setState(() {
+                            print_status = true;
+                          });
+                          var cus = Provider.of<CustomerProvider>(context,
+                                  listen: false)
+                              .getName(widget.order.customer_id.toString());
+                          Provider.of<ESC>(context, listen: false)
+                              .Print(widget.order.id, cus, USER);
+                          Timer(Duration(seconds: 7), () {
+                            setState(() {
+                              print_status = false;
+                            });
+                          });
+                        },
+                        icon: Icon(Icons.print_rounded,
+                            size: 50.0, color: Colors.blue)),
+                    Center(
+                        child: Text(
+                            print_status == false
+                                ? '     พิมพ์'
+                                : '     กำลังพิมพ์...',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold))),
+                  ],
+                )),
               ]),
             ),
           ]),

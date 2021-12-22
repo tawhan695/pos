@@ -41,8 +41,8 @@ class CartProvider with ChangeNotifier {
     notifyListeners();
   }
   setEmpty(){
-    data.clear();
-    cartList.clear();
+    data={};
+    cartList=[];
     // notifyListeners();
   }
 

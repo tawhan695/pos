@@ -18,62 +18,73 @@ class Cash extends StatefulWidget {
 }
 
 class _CashState extends State<Cash> {
-  bool _submit = true;
+  bool _submit = false;
   List ListJson = [];
-  var sum;
+  bool SubmitJson = false;
+  double sum = 0.0;
+  double sum_ = 0.0;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getListCart();
     setState(() {
-   sum =  Provider.of<CartProvider>(context, listen: false).getSum().toString();
-      
+      sum =
+          double.parse(Provider.of<CartProvider>(context, listen: false).getSum().toString());
+      sum_ = sum;
+      if (sum >= sum_) {
+        _submit = true;
+      } else {
+        _submit = false;
+      }
     });
   }
 
   getListCart() {
-   try {
+    try {
       var cart = Provider.of<CartProvider>(context, listen: false).getCart();
-    print('cart :>>>> $cart');
+      print('cart :>>>> $cart');
 
-    cart.forEach((e) {
-      var toJson = {
-        'quantity': e.quantity,
-        'product_id': e.product_id,
-        'price': e.price,
-        'status_sale': e.status_sale,
-        // 'retail_price': e.retail_price,
-      };
-      setState(() {
-        ListJson.add(toJson);
+      cart.forEach((e) {
+        var toJson = {
+          'quantity': e.quantity,
+          'product_id': e.product_id,
+          'price': e.price,
+          'status_sale': e.status_sale,
+          // 'retail_price': e.retail_price,
+        };
+        setState(() {
+          ListJson.add(toJson);
+        });
       });
-    });
-    // var json = jsonEncode(ListJson, toEncodable: (e) => e.toJsonAttr());
-    // print(json);
-    print(jsonEncode(ListJson));
-    String data = jsonEncode(ListJson);
-   }
-    catch (e){
+      // var json = jsonEncode(ListJson, toEncodable: (e) => e.toJsonAttr());
+      // print(json);
+      print(jsonEncode(ListJson));
+      String data = jsonEncode(ListJson);
+    } catch (e) {
       print('error $e');
     }
     // print(jsonDecode(data)[0]);
   }
 
-  final _controller = TextEditingController();
+  // final _controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     // var provider = Provider.of<CartProvider>(context, listen: false);
-    // var sum = provider.getSum();
-    _controller.text = sum;
+    // setState(() {
+    //   // sum = sum_;
+    //   sum_ = sum;
+    // });
+    // _controller.text = sum;
     return SingleChildScrollView(
       child: Container(
         child: Padding(
           padding: const EdgeInsets.all(80.0),
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Row(
                 //   children: [
@@ -89,7 +100,20 @@ class _CashState extends State<Cash> {
                       cursorHeight: 10,
                       // expands: true ,
                       // cursorWidth: 300,
-                      controller: _controller,
+                      // controller: _controller,
+                      key: Key(sum.toString()),
+                      initialValue: sum.toString(),
+                      onChanged: (val) {
+                        if (double.parse(val) >= sum_) {
+                          setState(() {
+                            _submit = true;
+                          });
+                        } else if (double.parse(val) < sum_) {
+                          setState(() {
+                            _submit = false;
+                          });
+                        }
+                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter some text';
@@ -119,7 +143,227 @@ class _CashState extends State<Cash> {
                     ),
                   ),
                 ),
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Card(
+                            child: SizedBox(
+                                width: 100,
+                                height: 70,
+                                child: FlatButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        sum += 5.0;
+                                        if (sum >=
+                                            sum_) {
+                                          _submit = true;
+                                        } else {
+                                          _submit = false;
+                                        }
+                                      });
+                                    },
+                                    child: Center(
+                                        child: Text('5',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 22))))),
+                          ),
+                          Card(
+                            child: SizedBox(
+                                width: 100,
+                                height: 70,
+                                child: FlatButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        sum += 10.0;
+                                        if (sum >=
+                                            sum_) {
+                                          _submit = true;
+                                        } else {
+                                          _submit = false;
+                                        }
+                                      });
+                                    },
+                                    child: Center(
+                                        child: Text('10',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 22))))),
+                          ),
+                          Card(
+                            child: SizedBox(
+                                width: 100,
+                                height: 70,
+                                child: FlatButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        sum += 20.0;
+                                        if (sum >=
+                                            sum_) {
+                                          _submit = true;
+                                        } else {
+                                          _submit = false;
+                                        }
+                                      });
+                                    },
+                                    child: Center(
+                                        child: Text('20',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 22))))),
+                          ),
+                         
+                        ],
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Card(
+                            child: SizedBox(
+                                width: 100,
+                                height: 70,
+                                child: FlatButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        sum += 100.0;
+                                        if (sum>=
+                                           sum_) {
+                                          _submit = true;
+                                        } else {
+                                          _submit = false;
+                                        }
+                                      });
+                                    },
+                                    child: Center(
+                                        child: Text('100',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 22))))),
+                          ),
+                          Card(
+                            child: SizedBox(
+                                width: 100,
+                                height: 70,
+                                child: FlatButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        sum += 200.0;
+                                        if (sum >=
+                                           sum_) {
+                                          _submit = true;
+                                        } else {
+                                          _submit = false;
+                                        }
+                                      });
+                                    },
+                                    child: Center(
+                                        child: Text('200',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 22))))),
+                          ),
+                          Card(
+                            child: SizedBox(
+                                width: 100,
+                                height: 70,
+                                child: FlatButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        sum += 500.0;
+                                        if (sum >=
+                                           sum_) {
+                                          _submit = true;
+                                        } else {
+                                          _submit = false;
+                                        }
+                                      });
+                                    },
+                                    child: Center(
+                                        child: Text('500',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 22))))),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Card(
+                            child: SizedBox(
+                                width: 100,
+                                height: 70,
+                                child: FlatButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        sum += 800.0;
+                                        if (sum >=
+                                           sum_) {
+                                          _submit = true;
+                                        } else {
+                                          _submit = false;
+                                        }
+                                      });
+                                    },
+                                    child: Center(
+                                        child: Text('800',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 22))))),
+                          ),
+                          Card(
+                            child: SizedBox(
+                                width: 100,
+                                height: 70,
+                                child: FlatButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        sum += 1000.0;
+                                        if (sum >=
+                                            sum_) {
+                                          _submit = true;
+                                        } else {
+                                          _submit = false;
+                                        }
+                                      });
+                                    },
+                                    child: Center(
+                                        child: Text('1000',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 22))))),
+                          ),
+                          Card(
+                            child: SizedBox(
+                                width: 100,
+                                height: 70,
+                                child: FlatButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        sum = 0.0;
 
+                                        _submit = false;
+                                      });
+                                    },
+                                    child: Center(
+                                        child: Text('ล้าง',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 22))))),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
                 Container(
                   width: 400,
                   height: 80,
@@ -131,10 +375,11 @@ class _CashState extends State<Cash> {
                     ),
                     onPressed: _submit
                         ? () async {
-                            print('jsonEncode(ListJson) : ${jsonEncode(ListJson)}');
+                            print(
+                                'jsonEncode(ListJson) : ${jsonEncode(ListJson)}');
                             var data = {
                               'cart': jsonEncode(ListJson),
-                              'cash': _controller.text,
+                              'cash': sum,
                               'payid_by': 'เงินสด',
                               'customer': Provider.of<CustomerProvider>(context,
                                               listen: false)
@@ -151,8 +396,6 @@ class _CashState extends State<Cash> {
                             print(data);
                             // print(jsonEncode(ListJson));
 
-
-
                             final response =
                                 await Network().getData(data, '/sale');
                             var body = json.decode(response.body);
@@ -168,11 +411,11 @@ class _CashState extends State<Cash> {
                                       builder: (context) => PaySuccess(
                                           change: body['change'].toString(),
                                           payment: 'เงินสด',
-                                          sum: sum.toString(),
-                                          id:body['order'].toString(),
-                                          user_id:body['user_id'].toString(),
-                                          customer_id:body['customer_id'].toString()
-                                          )),
+                                          sum: sum.toStringAsFixed(1).toString(),
+                                          id: body['order'].toString(),
+                                          user_id: body['user_id'].toString(),
+                                          customer_id:
+                                              body['customer_id'].toString())),
                                   (route) => false);
                               Provider.of<CustomerProvider>(context,
                                       listen: false)
@@ -182,7 +425,8 @@ class _CashState extends State<Cash> {
                             }
 
                             // Navigator.pushReplacementNamed(context,Change.RouteName);
-                             Navigator.of(context).pushNamedAndRemoveUntil(PaySuccess.RouteName, (route) => false);
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                PaySuccess.RouteName, (route) => false);
                           }
                         : null,
                     //  icon: Icon(Icons.attach_money_rounded),

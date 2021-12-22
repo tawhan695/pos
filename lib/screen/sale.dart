@@ -197,6 +197,7 @@ class _SaleState extends State<Sale> {
     // Provider.of<OrderProvider>(context, listen: false).initCart();
     print('CartProvider');
     Provider.of<CartProvider>(context, listen: false).innitProduct();
+    // getuser();
   }
 
   @override
@@ -358,7 +359,7 @@ class _SaleState extends State<Sale> {
                     ),
                     child: Column(
                       children: [
-                        Text('Terms of Service | Privacy Policy'),
+                        Text('Terms of Service | Tawhan Studio'),
                       ],
                     ),
                   ),

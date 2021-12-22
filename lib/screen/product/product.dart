@@ -9,6 +9,7 @@ import 'package:pos/models/catagory_model.dart';
 import 'package:pos/models/product_model.dart';
 import 'package:pos/network_api/api.dart';
 import 'package:pos/provider/order_provider.dart';
+import 'package:pos/provider/remove_provider.dart';
 import 'package:pos/screen/customer.dart';
 import 'package:pos/screen/login.dart';
 import 'package:pos/screen/receipt.dart';
@@ -17,6 +18,7 @@ import 'package:pos/screen/sale_wholosale.dart';
 import 'package:pos/screen/setting.dart';
 import 'package:provider/provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductScreen extends StatefulWidget {
   const ProductScreen({Key? key}) : super(key: key);
@@ -36,16 +38,20 @@ class _ProductScreenState extends State<ProductScreen> {
   List<CatagoryModel> Catagory = [];
   final _controller_2 = TextEditingController();
   var search = '';
+  List removeQTY = [];
   bool Issearch = false;
   String URL = 'https://tawhan.xyz/';
   @override
   void initState() {
+    get_sum();
     super.initState();
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     getProducts('all');
     getCatagory();
+    getuser();
+    // Provider.of<RemoveProvider>(context,listen: false).get_sum();
   }
 
   @override
@@ -53,6 +59,16 @@ class _ProductScreenState extends State<ProductScreen> {
     _connectivitySubscription.cancel();
     super.dispose();
     // _controller_2.dispose();
+  }
+
+  get_sum() async {
+    List sum = [];
+    final res = await Network().getData3('/product/defective/show');
+    if (res != 'error') {
+      List sum = json.decode(res.body)['sum'];
+      print('sum >> $sum');
+      removeQTY = sum;
+    }
   }
 
   void saveRemove(id_product, qty, status) {
@@ -179,6 +195,19 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   int Isselect = 0;
+
+   String name_ = '';
+  String email_ = '';
+  getuser() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    setState(() {
+      var User = jsonDecode(localStorage.getString('user').toString());
+      // print(dara);
+      name_ = User['name'];
+      email_ = User['email'];
+      print(User);
+    });
+  }
   @override
   Widget build(BuildContext context) {
     Color getColor(Set<MaterialState> states) {
@@ -229,8 +258,15 @@ class _ProductScreenState extends State<ProductScreen> {
                     'assets/images/5942.png',
                   ),
                 ),
-                Center(
-                  child: Text('ออกจากระบบ'),
+                Container(
+                  child: Text('$name_',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white)),
+                ),
+                Container(
+                  child: Text('email:$email_',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white)),
                 ),
                 ListTile(
                   onTap: () {
@@ -262,7 +298,9 @@ class _ProductScreenState extends State<ProductScreen> {
                         RemoveProduct.RouteName, (route) => false);
                   },
                   leading: Icon(Icons.remove_shopping_cart),
-                  title: Text('สินค้าชำรุด',),
+                  title: Text(
+                    'สินค้าชำรุด',
+                  ),
                 ),
                 ListTile(
                   onTap: () {
@@ -324,7 +362,7 @@ class _ProductScreenState extends State<ProductScreen> {
                     margin: const EdgeInsets.symmetric(
                       vertical: 16.0,
                     ),
-                    child: Text('Terms of Service | Privacy Policy'),
+                    child: Text('Terms of Service | Tawhan Studio'),
                   ),
                 ),
               ],
@@ -334,7 +372,7 @@ class _ProductScreenState extends State<ProductScreen> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Tawhan POS ( มัทนาไข่สด )'),
+          title: const Text('MTN POS'),
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
@@ -422,13 +460,16 @@ class _ProductScreenState extends State<ProductScreen> {
                   SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (BuildContext context, int index) {
-                        // bool load_remove = true;
-                        // bool _isButtonDisabled = false;
-                        // setState(() {
-                        //   _isButtonDisabled = false;
-                        // });
+                        var sum = '0';
+                        for (var i = 0; i < removeQTY.length; i++) {
+                          if (PRODUCT[index].id == removeQTY[i]['product_id']) {
+                            print(removeQTY[i]);
+                            sum = removeQTY[i]['sum'];
+                            break;
+                          }
+                        }
                         return Container(
-                          height: 220,
+                          height: 226,
                           width: double.infinity,
                           margin: EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -513,209 +554,183 @@ class _ProductScreenState extends State<ProductScreen> {
                                       Row(
                                         children: [
                                           Text(
-                                              'ชำรุด :  0 ${PRODUCT[index].unit}',
+                                              'ชำรุด :$sum ${PRODUCT[index].unit}',
                                               style: TextStyle(
                                                   fontSize: 20,
                                                   color: Colors.grey)),
                                           SizedBox(
                                             width: 20,
                                           ),
-                                          
                                           ElevatedButton(
-                                              onPressed: PRODUCT[index].qty < 1 ? null : ()  {
-                                                StateSetter _setState;
-                                                // String _demoText = "test";
-                                                showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return AlertDialog(
-                                                      content: StatefulBuilder(
-                                                        // You need this, notice the parameters below:
-
+                                              onPressed: PRODUCT[index].qty < 1
+                                                  ? null
+                                                  : () {
+                                                      StateSetter _setState;
+                                                      // String _demoText = "test";
+                                                      showDialog(
+                                                        context: context,
                                                         builder: (BuildContext
-                                                                context,
-                                                            StateSetter
-                                                                setState) {
-                                                          _setState = setState;
-                                                          return Center(
-                                                            child: Column(
-                                                              children: <
-                                                                  Widget>[
-                                                                SizedBox(
-                                                                  width: 100,
-                                                                  height: 40,
-                                                                ),
-                                                                Text(
-                                                                    "เพิ่มสินค้าที่เสียหาย ใส่จำนวน \"${PRODUCT[index].unit}\" ให้ถูกต้อง  ",
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            21)),
-                                                                TextField(
-                                                                  maxLength: 6,
-                                                                  autofocus:
-                                                                      true,
-                                                                  keyboardType:
-                                                                      TextInputType
-                                                                          .number,
-                                                                  controller:
-                                                                      _controller_2,
+                                                            context) {
+                                                          return AlertDialog(
+                                                            content:
+                                                                StatefulBuilder(
+                                                              // You need this, notice the parameters below:
 
-                                                                ),
-                                                                Container(
-                                                                  child: Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .center,
+                                                              builder: (BuildContext
+                                                                      context,
+                                                                  StateSetter
+                                                                      setState) {
+                                                                _setState =
+                                                                    setState;
+                                                                return Center(
+                                                                  child: Column(
                                                                     children: <
                                                                         Widget>[
-                                                                      // Checkbox(
-                                                                      //     checkColor:
-                                                                      //         Colors.white,
-                                                                      //     fillColor: MaterialStateProperty
-                                                                      //         .resolveWith(
-                                                                      //             getColor),
-                                                                      //     value: isChecked,
-                                                                      //     onChanged: (bool?
-                                                                      //         value) {
-                                                                      //       setState(() {
-                                                                      //         isChecked =
-                                                                      //             value!;
-                                                                      //       });
-                                                                      //     }),
+                                                                      SizedBox(
+                                                                        width:
+                                                                            100,
+                                                                        height:
+                                                                            40,
+                                                                      ),
                                                                       Text(
-                                                                          'ประเภทควาเสียหาย',
+                                                                          "เพิ่มสินค้าที่เสียหาย ใส่จำนวน \"${PRODUCT[index].unit}\" ให้ถูกต้อง  ",
                                                                           style:
-                                                                              TextStyle(fontSize: 20)),
-                                                                      Padding(
-                                                                        padding:
-                                                                            const EdgeInsets.all(8.0),
-                                                                        child: DropdownButton<
-                                                                            String>(
-                                                                          value:
-                                                                              dropdownValue,
-                                                                          icon:
-                                                                              const Icon(Icons.arrow_downward),
-                                                                          iconSize:
-                                                                              24,
-                                                                          elevation:
-                                                                              16,
-                                                                          style:
-                                                                              const TextStyle(color: Colors.deepPurple),
-                                                                          underline:
-                                                                              Container(
-                                                                            height:
-                                                                                2,
-                                                                            color:
-                                                                                Colors.deepPurpleAccent,
-                                                                          ),
-                                                                          onChanged:
-                                                                              (String? newValue) {
-                                                                            setState(() {
-                                                                              dropdownValue = newValue!;
-                                                                            });
-                                                                          },
-                                                                          items: <
-                                                                              String>[
-                                                                            'แตก',
-                                                                            'เน่า',
-                                                                            'บุป/ร้าว',
-                                                                          ].map<DropdownMenuItem<String>>((String
-                                                                              value) {
-                                                                            return DropdownMenuItem<String>(
-                                                                              value: value,
-                                                                              child: Text(value),
-                                                                            );
-                                                                          }).toList(),
-                                                                        ),
+                                                                              TextStyle(fontSize: 21)),
+                                                                      TextField(
+                                                                        maxLength:
+                                                                            6,
+                                                                        autofocus:
+                                                                            true,
+                                                                        keyboardType:
+                                                                            TextInputType.number,
+                                                                        controller:
+                                                                            _controller_2,
                                                                       ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                                Container(
-                                                                  child: Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .end,
-                                                                    children: [
-                                                                      DialogButton(
-                                                                          child:
-                                                                              Text(
-                                                                            "บันทึก",
-                                                                            style:
-                                                                                TextStyle(color: Colors.white, fontSize: 20),
-                                                                          ),
-                                                                          color: Colors
-                                                                              .green,
-                                                                          onPressed: 
-                                                                          // _controller_2.value.text.isNotEmpty ?
-                                                                              () async {
-                                                                            bool
-                                                                                load =
-                                                                                true;
-                                                                            // saveRemove(
-                                                                            //     PRODUCT[index].id,
-                                                                            //     _controller_2.text,
-                                                                            //     dropdownValue);
-                                                                            // Navigator.pop(context);
-                                                                          
-                                                                            onLoadAlert(context);
-                                                                            var data = {
-                                                                              'id': PRODUCT[index].id,
-                                                                              'defective':_controller_2.value.text,
-                                                                              // 'defective': 5,
-                                                                              'status':'${dropdownValue}',
-                                                                              // 'status': 'แตก',
-                                                                            };
-                                                                            print(data);
-                                                                            print(_controller_2.text);
-                                                                              _controller_2.text =
-                                                                                '';
-                                                                            // product/defective/add
-                                                                            final response =
-                                                                                await Network().getData(data,'/product/defective/add');
-                                                                            if (response.statusCode ==
-                                                                                200) {
-                                                                              var body = json.decode(response.body);
-                                                                              print(body);
-                                                                              // if (body['success'] == 'บันทึกเรียบร้อย') {
-                                                                                // Navigator.pop(context);
-                                                                                Navigator.pushNamed(context, ProductScreen.RouteName);
-                                                                                // getProducts('all');
-                                                                                // Navigator.of(context).pushNamed(ProductScreen.RouteName);
-                                                                              // } else {
-                                                                              //   Navigator.pop(context);
-                                                                              // }
-                                                                            }
-                                                                          }
-                                                                          // :null
-                                                                          ),
-                                                                      DialogButton(
+                                                                      Container(
                                                                         child:
-                                                                            Text(
-                                                                          "ยกเลิก",
-                                                                          style: TextStyle(
-                                                                              color: Colors.white,
-                                                                              fontSize: 20),
+                                                                            Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.center,
+                                                                          children: <
+                                                                              Widget>[
+                                                                            // Checkbox(
+                                                                            //     checkColor:
+                                                                            //         Colors.white,
+                                                                            //     fillColor: MaterialStateProperty
+                                                                            //         .resolveWith(
+                                                                            //             getColor),
+                                                                            //     value: isChecked,
+                                                                            //     onChanged: (bool?
+                                                                            //         value) {
+                                                                            //       setState(() {
+                                                                            //         isChecked =
+                                                                            //             value!;
+                                                                            //       });
+                                                                            //     }),
+                                                                            Text('ประเภทควาเสียหาย',
+                                                                                style: TextStyle(fontSize: 20)),
+                                                                            Padding(
+                                                                              padding: const EdgeInsets.all(8.0),
+                                                                              child: DropdownButton<String>(
+                                                                                value: dropdownValue,
+                                                                                icon: const Icon(Icons.arrow_downward),
+                                                                                iconSize: 24,
+                                                                                elevation: 16,
+                                                                                style: const TextStyle(color: Colors.deepPurple),
+                                                                                underline: Container(
+                                                                                  height: 2,
+                                                                                  color: Colors.deepPurpleAccent,
+                                                                                ),
+                                                                                onChanged: (String? newValue) {
+                                                                                  setState(() {
+                                                                                    dropdownValue = newValue!;
+                                                                                  });
+                                                                                },
+                                                                                items: <String>[
+                                                                                  'แตก',
+                                                                                  'เน่า',
+                                                                                  'บุป/ร้าว',
+                                                                                ].map<DropdownMenuItem<String>>((String value) {
+                                                                                  return DropdownMenuItem<String>(
+                                                                                    value: value,
+                                                                                    child: Text(value),
+                                                                                  );
+                                                                                }).toList(),
+                                                                              ),
+                                                                            ),
+                                                                          ],
                                                                         ),
-                                                                        onPressed:
-                                                                            () =>
-                                                                                Navigator.pop(context),
-                                                                        color: Colors
-                                                                            .red,
                                                                       ),
+                                                                      Container(
+                                                                        child:
+                                                                            Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.end,
+                                                                          children: [
+                                                                            DialogButton(
+                                                                                child: Text(
+                                                                                  "บันทึก",
+                                                                                  style: TextStyle(color: Colors.white, fontSize: 20),
+                                                                                ),
+                                                                                color: Colors.green,
+                                                                                onPressed:
+                                                                                    // _controller_2.value.text.isNotEmpty ?
+                                                                                    () async {
+                                                                                  bool load = true;
+                                                                                  // saveRemove(
+                                                                                  //     PRODUCT[index].id,
+                                                                                  //     _controller_2.text,
+                                                                                  //     dropdownValue);
+                                                                                  // Navigator.pop(context);
+
+                                                                                  onLoadAlert(context);
+                                                                                  var data = {
+                                                                                    'id': PRODUCT[index].id,
+                                                                                    'defective': _controller_2.value.text,
+                                                                                    // 'defective': 5,
+                                                                                    'status': '${dropdownValue}',
+                                                                                    // 'status': 'แตก',
+                                                                                  };
+                                                                                  print(data);
+                                                                                  print(_controller_2.text);
+                                                                                  _controller_2.text = '';
+                                                                                  // product/defective/add
+                                                                                  final response = await Network().getData(data, '/product/defective/add');
+                                                                                  if (response.statusCode == 200) {
+                                                                                    var body = json.decode(response.body);
+                                                                                    print(body);
+                                                                                    // if (body['success'] == 'บันทึกเรียบร้อย') {
+                                                                                    // Navigator.pop(context);
+                                                                                    Navigator.pushNamed(context, ProductScreen.RouteName);
+                                                                                    // getProducts('all');
+                                                                                    // Navigator.of(context).pushNamed(ProductScreen.RouteName);
+                                                                                    // } else {
+                                                                                    //   Navigator.pop(context);
+                                                                                    // }
+                                                                                  }
+                                                                                }
+                                                                                // :null
+                                                                                ),
+                                                                            DialogButton(
+                                                                              child: Text(
+                                                                                "ยกเลิก",
+                                                                                style: TextStyle(color: Colors.white, fontSize: 20),
+                                                                              ),
+                                                                              onPressed: () => Navigator.pop(context),
+                                                                              color: Colors.red,
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      )
                                                                     ],
                                                                   ),
-                                                                )
-                                                              ],
+                                                                );
+                                                              },
                                                             ),
                                                           );
                                                         },
-                                                      ),
-                                                    );
-                                                  },
-                                                );
-                                              },
+                                                      );
+                                                    },
                                               child: Text('เพิ่มในรายการชำรุด',
                                                   style:
                                                       TextStyle(fontSize: 16))

@@ -54,7 +54,7 @@ class _LoginState extends State<Login> {
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
-      // checkAuth();
+    // checkAuth();
   }
 
   @override
@@ -156,7 +156,6 @@ class _LoginState extends State<Login> {
       key: scaffoldkey,
       backgroundColor: Theme.of(context).accentColor,
       body: Center(
-        
         child: SingleChildScrollView(
           child: Center(
             child: Column(
@@ -310,9 +309,10 @@ class _LoginState extends State<Login> {
                                         var body = json.decode(res.body);
                                         print(data);
 
+                                        print(body);
                                         // CircularProgressIndicator();
                                         if (res.statusCode == 200) {
-                                          if (body['sucess'] != null) {
+                                          if (body['sucess'] == true) {
                                             SharedPreferences localStorage =
                                                 await SharedPreferences
                                                     .getInstance();
@@ -329,7 +329,7 @@ class _LoginState extends State<Login> {
                                                 .pushNamedAndRemoveUntil(
                                                     SaleWholosale.RouteName,
                                                     (route) => false);
-                                          } else if (body['error'] != null) {
+                                          } else if (body['sucess'] == false) {
                                             setState(() {
                                               _isButtonDisabled = false;
                                             });
@@ -342,7 +342,11 @@ class _LoginState extends State<Login> {
                                         } else {
                                           print(res.statusCode);
                                           print('connect failed');
-                                          _handleClickMe();
+                                           showToast('email หรือ password ไม่ถูกต้องนะครับ');
+                                           setState(() {
+                                              _isButtonDisabled = false;
+                                            });
+                                          // _handleClickMe();
                                         }
                                       } else {
                                         _AlertNet(context);
@@ -390,7 +394,7 @@ class _LoginState extends State<Login> {
   //      setState(() {
   //        isAuth = true;
   //      });
-    
+
   //   }
   //   print('isAuth $isAuth');
   //    if(isAuth == true) {

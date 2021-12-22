@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -16,8 +17,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PaySuccess extends StatefulWidget {
   const PaySuccess({ required this.change, required this.payment, required this.sum,required this.id,required this.user_id,required this.customer_id});
-  static const RouteName = '/pay';
-  final String change;
+  static const RouteName = '/pay_cash';
+   final String change;
    final String payment;
    final String sum;
    final String id;
@@ -30,23 +31,8 @@ class PaySuccess extends StatefulWidget {
 }
 
 class _PaySuccessState extends State<PaySuccess> {
-//   List Branches = []; 
-//  getBranch() async { 
-//    SharedPreferences localStorage = await SharedPreferences.getInstance();
-//    var branch = jsonDecode(localStorage.getString('branch').toString());
-   
-//   //  print(branch);
-//   //  print(branch);
-//   //  print(branch['name']);
- 
-    
-//    Branches.add(branch['name']);
-//    Branches.add(branch['des']);
-//    print('11 Branches  object ${Branches}');
-  
-   
-//    return Branches ;
-//    }
+  bool success = false;
+
   @override
   void initState() {
     super.initState();
@@ -58,11 +44,21 @@ class _PaySuccessState extends State<PaySuccess> {
      Provider.of<ESC>(context, listen: false).Print(widget.id,widget.customer_id,widget.user_id);
     // print(branch.length);
     // print(branch['name']);
+     PrintTicket(widget.id,widget.customer_id,widget.user_id);
 
     // print(branch['name']);
-    
-  
+    Provider.of<CartProvider>(context, listen: false).setEmpty();
+    Timer(Duration(seconds: 3), () {
+    print("Yeah, this line is printed after 3 seconds");
+    setState(() {
+      success = true;
+    });
+});
   }
+    PrintTicket(id,customer_id,user_id){
+      print('print : $id  $customer_id  $user_id');
+    }
+  
  @override
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
@@ -75,6 +71,7 @@ class _PaySuccessState extends State<PaySuccess> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    
     // try {
 
     // }catch (e) {
@@ -85,7 +82,7 @@ class _PaySuccessState extends State<PaySuccess> {
  
   @override
   Widget build(BuildContext context) {
-    Provider.of<CartProvider>(context, listen: false).setEmpty();
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(''),
@@ -114,7 +111,7 @@ class _PaySuccessState extends State<PaySuccess> {
                             fontSize: 50, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'ยอกเงินที่ชำระ',
+                        'ยอดเงินที่ชำระ',
                         style: TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
@@ -137,7 +134,7 @@ class _PaySuccessState extends State<PaySuccess> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          widget.change,
+                          double.parse(widget.change).toString(),
                           style: TextStyle(
                               fontSize: 50, fontWeight: FontWeight.bold),
                         ),
@@ -156,6 +153,23 @@ class _PaySuccessState extends State<PaySuccess> {
             ],
           ),
           // Spacer(),
+          success == false?
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('กำลังพิมพ์ ',style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),
+              // SizedBox(width: 100, height: 100,child: CircularProgressIndicator()),
+            SizedBox(width: 10, height: 10,),
+            SizedBox(
+              width: 70, height: 70,
+              child: CircularProgressIndicator(
+                strokeWidth: 20,
+                valueColor : AlwaysStoppedAnimation(Colors.orange),
+              ),
+            ),
+            ],
+          ):
           Container(
             width: 600,
             height: 70,

@@ -14,6 +14,7 @@ import 'package:pos/screen/remove_product/remove_product.dart';
 import 'package:pos/screen/sale_wholosale.dart';
 import 'package:pos/screen/setting.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'order_details/order_details.dart';
 
@@ -38,43 +39,43 @@ class _ReceiptState extends State<Receipt> {
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
   bool CheckNet = false;
 
-  int  maxPage = 0;
-  var  current_page = 0;
+  int maxPage = 0;
+  var current_page = 0;
 
-   oderPage() async {
-      final res =   await Network().getData3('/order');
-      if (res != 'error'){
-        var links = json.decode(res.body)['order']['links'];
-        //  current_page = json.decode(res.body)['order']['current_page'];
-        //  setState(() {
-        //    current_page
-        //  });
-  // var body2 = json.decode(res.body)['detail'];
-    if(res.statusCode == 200){
-      maxPage = links.length - 2;
-      
+  oderPage() async {
+    final res = await Network().getData3('/order');
+    if (res != 'error') {
+      var links = json.decode(res.body)['order']['links'];
+      //  current_page = json.decode(res.body)['order']['current_page'];
+      //  setState(() {
+      //    current_page
+      //  });
+      // var body2 = json.decode(res.body)['detail'];
+      if (res.statusCode == 200) {
+        maxPage = links.length - 2;
       }
     }
-
   }
+
   int Nnext = 0;
-setState_net(int page){
+  setState_net(int page) {
     // setState(() {
     // });
-      Nnext += page;
+    Nnext += page;
 
-      if (Nnext < 0){
-        Nnext = maxPage;
-      }else if (Nnext > maxPage){
-        Nnext = 0;
-      }
+    if (Nnext < 0) {
+      Nnext = maxPage;
+    } else if (Nnext > maxPage) {
+      Nnext = 0;
+    }
     print(Nnext);
-       setState(() {
-           current_page= Nnext;
-         });
+    setState(() {
+      current_page = Nnext;
+    });
     print("maxPage $maxPage");
     Provider.of<ListOrderProvider>(context, listen: false).initListorder(Nnext);
-}
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -85,6 +86,7 @@ setState_net(int page){
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     Provider.of<ListOrderProvider>(context, listen: false).initListorder(0);
     Provider.of<CustomerProvider>(context, listen: false).initCustomer();
+    getuser();
   }
 
   @override
@@ -145,6 +147,19 @@ setState_net(int page){
     ).show();
   }
 
+  String name_ = '';
+  String email_ = '';
+  getuser() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    setState(() {
+      var User = jsonDecode(localStorage.getString('user').toString());
+      // print(dara);
+      name_ = User['name'];
+      email_ = User['email'];
+      print(User);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return AdvancedDrawer(
@@ -183,8 +198,15 @@ setState_net(int page){
                     'assets/images/5942.png',
                   ),
                 ),
-                Center(
-                  child: Text('ออกจากระบบ'),
+                Container(
+                  child: Text('$name_',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white)),
+                ),
+                Container(
+                  child: Text('email:$email_',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white)),
                 ),
                 ListTile(
                   onTap: () {
@@ -219,7 +241,9 @@ setState_net(int page){
                         RemoveProduct.RouteName, (route) => false);
                   },
                   leading: Icon(Icons.remove_shopping_cart),
-                  title: Text('สินค้าชำรุด',),
+                  title: Text(
+                    'สินค้าชำรุด',
+                  ),
                 ),
                 ListTile(
                   onTap: () {
@@ -266,7 +290,7 @@ setState_net(int page){
                     margin: const EdgeInsets.symmetric(
                       vertical: 16.0,
                     ),
-                    child: Text('Terms of Service | Privacy Policy'),
+                    child: Text('Terms of Service | Tawhan Studio'),
                   ),
                 ),
               ],
@@ -276,7 +300,7 @@ setState_net(int page){
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Tawhan POS ( มัทนาไข่สด )'),
+          title: const Text('MTN POS'),
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
@@ -335,7 +359,6 @@ setState_net(int page){
                 ),
               ),
             ),
-            
             Consumer(builder:
                 (BuildContext context, ListOrderProvider listorder, Widget) {
               var data = listorder.getListorder();
@@ -408,21 +431,26 @@ setState_net(int page){
                     )
                     .toList(),
               );
+           
             }),
-            
-            Container(child:Row(
-              crossAxisAlignment:CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(onPressed: ()=>setState_net(-1), icon: Icon(Icons.arrow_back_ios,size: 40)),
-                Container(child: 
-                current_page == 0 ?
-                Text('หน้าแรก'):
-                Text('หน้า $current_page')
-                ),
-                IconButton(onPressed: ()=>setState_net(1), icon: Icon(Icons.arrow_forward_ios,size: 40)),
-              ],
-            ) ,),
+            Container(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                      onPressed: () => setState_net(-1),
+                      icon: Icon(Icons.arrow_back_ios, size: 40)),
+                  Container(
+                      child: current_page == 0
+                          ? Text('หน้าแรก')
+                          : Text('หน้า $current_page')),
+                  IconButton(
+                      onPressed: () => setState_net(1),
+                      icon: Icon(Icons.arrow_forward_ios, size: 40)),
+                ],
+              ),
+            ),
           ]),
         ),
       ),

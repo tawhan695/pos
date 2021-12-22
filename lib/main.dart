@@ -14,6 +14,7 @@ import 'package:pos/screen/CheckConnect.dart';
 import 'package:pos/screen/Landing.dart';
 import 'package:pos/screen/change/change.dart';
 import 'package:pos/screen/customer.dart';
+import 'package:pos/screen/customer/customer_detail.dart';
 import 'package:pos/screen/dashboard/dashboard.dart';
 // import 'package:pos/provider/product_provider.dart';
 import 'package:pos/screen/login.dart';
@@ -116,6 +117,7 @@ class MyApp extends StatelessWidget {
               DashboardScreen.RouteName: (context) => DashboardScreen(),
               Landing.RouteName: (context) => Landing(),
               RemoveProduct.RouteName: (context) => RemoveProduct(),
+              // CustomerDetail.RouteName: (context) => CustomerDetail(),
             },
             title: 'MTN POS',
       

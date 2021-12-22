@@ -32,6 +32,7 @@ import 'package:connectivity/connectivity.dart';
 import 'dart:io';
 import 'dart:async';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SaleWholosale extends StatefulWidget {
   // SaleWholosale({Key? key}) : super(key: key);
@@ -201,6 +202,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getuser();
 
     //  start();
     initConnectivity();
@@ -210,7 +212,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
     print('CartProvider');
     Provider.of<CartProvider>(context, listen: false).innitProduct();
     Provider.of<ProductProvider>(context, listen: false).initData('0', 'all');
-    Provider.of<ESC>(context, listen: false).getPrintter();
+    // Provider.of<ESC>(context, listen: false).getPrintter();
   }
 
   @override
@@ -263,8 +265,24 @@ class _SaleWholosaleState extends State<SaleWholosale> {
   }
 
   bool Hsearch = true;
+
+  // var User;
+  String name_ = '';
+  String email_ = '';
+  getuser() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    setState(() {
+      var User = jsonDecode(localStorage.getString('user').toString());
+      // print(dara);
+      name_ = User['name'];
+      email_ = User['email'];
+      print(User);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    Provider.of<ESC>(context, listen: false).getPrintter();
     return AdvancedDrawer(
       backdropColor: Color(0xffFF8F33),
       controller: _advancedDrawerController,
@@ -301,7 +319,16 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                     'assets/images/5942.png',
                   ),
                 ),
-                Container(),
+                Container(
+                  child: Text('$name_',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white)),
+                ),
+                Container(
+                  child: Text('email:$email_',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white)),
+                ),
                 ListTile(
                   onTap: () {
                     Navigator.of(context).pushNamedAndRemoveUntil(
@@ -382,7 +409,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                     ),
                     child: Column(
                       children: [
-                        Text('Terms of Service | Privacy Policy'),
+                        Text('Terms of Service | Tawhan Studio'),
                       ],
                     ),
                   ),
@@ -394,7 +421,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('MTN POS ( มัทนาไข่สด )'),
+          title: const Text('MTN POS'),
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
@@ -641,7 +668,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                           ),
                                         );
                                       } else {
-                                        return new GestureDetector(
+                                        return  GestureDetector(
                                           onTap: () {
                                             var name = snapshot.data[index].id;
                                             //print(index.toString() + '$name');
@@ -795,14 +822,14 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                             snapshot.data[index]
                                                                 .sku,
                                                             1);
-                                                    setState(() {
-                                                      print('sst $SSt');
+                                                    // setState(() {
+                                                      // print('sst $SSt');
                                                       if (SSt == false) {
                                                         showAlertDialog2(
                                                             context);
                                                       }
                                                       // snapshot.data[index].qty -= 1;
-                                                    });
+                                                    // });
 
                                                     // snapshot.data[index].qty -
                                                     //     1;
@@ -906,7 +933,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                                             .qty >
                                                                         0
                                                                     ? Text(
-                                                                        "฿ ${snapshot.data[index].retail_price}/",
+                                                                        "฿ ${double.parse(snapshot.data[index].retail_price.toString())}/",
                                                                         style: const TextStyle(
                                                                             fontSize:
                                                                                 15,
@@ -915,7 +942,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                                             fontWeight: FontWeight.bold),
                                                                       )
                                                                     : Text(
-                                                                        "( หมด )฿ ${snapshot.data[index].retail_price}/",
+                                                                        "( หมด )฿ ${double.parse(snapshot.data[index].retail_price.toString())}/",
                                                                         style: const TextStyle(
                                                                             fontSize:
                                                                                 15,
@@ -924,7 +951,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                                             fontWeight: FontWeight.bold),
                                                                       ),
                                                                 Text(
-                                                                  "${snapshot.data[index].wholesale_price}",
+                                                                  "${double.parse(snapshot.data[index].wholesale_price.toString())}",
                                                                   style: const TextStyle(
                                                                       fontSize:
                                                                           13,
@@ -1039,7 +1066,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                       color: Color(0xffFE7300),
                                       onPressed: () {
                                         Provider.of<CartProvider>(context,
-                                                listen: false)  
+                                                listen: false)
                                             .emptyCart();
                                         Provider.of<CartProvider>(context,
                                                 listen: false)
@@ -1321,15 +1348,14 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                               // ],
                             ),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Container(),
-                                Spacer(),
                                 Column(
                                   children: [
                                     Text(
                                       'รวม     ฿${order.getSum().toString()} ',
                                       style: TextStyle(
-                                          fontSize: 30,
+                                          fontSize: 26,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.green),
                                     ),

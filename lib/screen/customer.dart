@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
@@ -12,6 +14,9 @@ import 'package:pos/screen/sale_wholosale.dart';
 import 'package:pos/screen/setting.dart';
 import 'package:pos/screen/user_widget/add_user.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'customer/customer_detail.dart';
 
 class Customer extends StatefulWidget {
   // const Customer({ Key? key }) : super(key: key);
@@ -28,6 +33,19 @@ class _CustomerState extends State<Customer> {
   void initState() {
     super.initState();
     Provider.of<CustomerProvider>(context, listen: false).initCustomer();
+    getuser();
+  }
+   String name_ = '';
+  String email_ = '';
+  getuser() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    setState(() {
+      var User = jsonDecode(localStorage.getString('user').toString());
+      // print(dara);
+      name_ = User['name'];
+      email_ = User['email'];
+      // print(User);
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -67,8 +85,20 @@ class _CustomerState extends State<Customer> {
                     'assets/images/5942.png',
                   ),
                 ),
-                Center(
-                  child: Text('ออกจากระบบ'),
+                Container(
+                  child: Text(
+                  
+                    '$name_'
+                    ,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white)),
+                ),
+                Container(
+                  child: Text(
+                    
+                    'email:$email_',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white)),
                 ),
                 ListTile(
                   onTap: () {
@@ -157,7 +187,7 @@ class _CustomerState extends State<Customer> {
                     margin: const EdgeInsets.symmetric(
                       vertical: 16.0,
                     ),
-                    child: Text('Terms of Service | Privacy Policy'),
+                    child: Text('Terms of Service | Tawhan Studio'),
                   ),
                 ),
               ],
@@ -167,7 +197,7 @@ class _CustomerState extends State<Customer> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Tawhan POS ( มัทนาไข่สด )'),
+          title: const Text('MTN POS'),
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
@@ -307,13 +337,10 @@ class _CustomerState extends State<Customer> {
                                       size: 50,
                                     ),
                                     onPressed: () {
-                                      // Provider.of<CustomerProvider>(context,
-                                      //         listen: false)
-                                      //     .addCustomer(customer);
-
-                                      // // ฝฝเลือกแล้วย้อนกลับ
-
-                                      // Navigator.pop(context);
+                                    //  Navigator.of(context).pushNamed(CustomerDetail.RouteName);
+                                     Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        CustomerDetail(customer)));
                                     }),
                                 //  Icon(Icons.add,size: 50,),
                               ),

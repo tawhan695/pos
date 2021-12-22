@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:pos/network_api/api.dart';
+import 'package:pos/provider/printer_bluetooth.dart';
 import 'package:pos/screen/customer.dart';
 import 'package:pos/screen/login.dart';
 import 'package:pos/screen/printter/printter.dart';
@@ -11,8 +14,10 @@ import 'package:pos/screen/sale_wholosale.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:connectivity/connectivity.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class Setting extends StatefulWidget {
   // const Setting({ Key? key }) : super(key: key);
   static const RouteName = '/setting';
@@ -34,6 +39,9 @@ class _SettingState extends State<Setting> {
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+  getuser();
+  Provider.of<ESC>(context, listen: false).startScanDevices();
+  // Provider.of<ESC>(context, listen: false).selectDevices();
   }
 
   @override
@@ -81,6 +89,18 @@ class _SettingState extends State<Setting> {
           desc: "โปรเชื่อมต่อ อินเตอร์เน็ต",
         ).show();
   }
+    String name_ = '';
+  String email_ = '';
+  getuser() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    setState(() {
+     var User= jsonDecode(localStorage.getString('user').toString());
+      // print(dara);
+     name_= User['name'];
+     email_= User['email'];
+    print(User);
+    });
+  }
   @override
   Widget build(BuildContext context) {
       return AdvancedDrawer(
@@ -119,8 +139,20 @@ class _SettingState extends State<Setting> {
                     'assets/images/5942.png',
                   ),
                 ),
-                Center(
-                  child: Text('ออกจากระบบ'),
+                Container(
+                  child: Text(
+                  
+                    '$name_'
+                    ,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white)),
+                ),
+                Container(
+                  child: Text(
+                    
+                    'email:$email_',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white)),
                 ),
                 ListTile(
                   onTap: () {
@@ -207,7 +239,7 @@ class _SettingState extends State<Setting> {
                     margin: const EdgeInsets.symmetric(
                       vertical: 16.0,
                     ),
-                    child: Text('Terms of Service | Privacy Policy'),
+                    child: Text('Terms of Service | Tawhan Studio'),
                   ),
                 ),
               ],

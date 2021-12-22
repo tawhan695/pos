@@ -26,6 +26,7 @@ import 'package:connectivity/connectivity.dart';
 import 'dart:async';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RemoveProduct extends StatefulWidget {
   static const RouteName = '/RemoveProduct';
@@ -99,6 +100,7 @@ class _RemoveProductState extends State<RemoveProduct> {
     // TODO: implement initState
     super.initState();
     oderPage();
+    getuser();
     initConnectivity();
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
@@ -118,38 +120,6 @@ class _RemoveProductState extends State<RemoveProduct> {
     super.dispose();
   }
 
-  // int _page = 1;
-  // List _data = [];
-  // Future<List<dynamic>> getremove(page) async {
-  //   List data = [];
-  //   // print('22');
-  //   var response;
-  //   if (page == 0) {
-  //     response = await Network().getData3('/product/defective');
-  //   } else {
-  //     response = await Network().getData3('/product/defective?page=$page');
-  //   }
-  //   var body = json.decode(response.body)['defective']['data'];
-  //   data = body;
-  //   _data = body;
-  //   print(data);
-  //   // setState(() {
-  //   //   _page = body['current_page'];
-  //   //   print('_page $_page');
-  //   // });
-
-  //   return data;
-  // }
-  // setproduct()  {
-  //   // product =
-  //   // print(product);
-  // // _product.forEach((e){
-  // //   // print(e.name);
-  // //   // print(e.id);
-  // //   product['${e.id}'] = e.name;
-  //   // print(product[0]);
-  // // });
-  // }
 
   getName(id) {
     var name = '';
@@ -217,6 +187,19 @@ class _RemoveProductState extends State<RemoveProduct> {
     ).show();
   }
 
+  String name_ = '';
+  String email_ = '';
+  getuser() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    setState(() {
+      var User = jsonDecode(localStorage.getString('user').toString());
+      // print(dara);
+      name_ = User['name'];
+      email_ = User['email'];
+      print(User);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return AdvancedDrawer(
@@ -255,8 +238,15 @@ class _RemoveProductState extends State<RemoveProduct> {
                     'assets/images/5942.png',
                   ),
                 ),
-                Center(
-                  child: Text('ออกจากระบบ'),
+                Container(
+                  child: Text('$name_',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white)),
+                ),
+                Container(
+                  child: Text('email:$email_',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white)),
                 ),
                 ListTile(
                   onTap: () {
@@ -342,7 +332,7 @@ class _RemoveProductState extends State<RemoveProduct> {
                     margin: const EdgeInsets.symmetric(
                       vertical: 16.0,
                     ),
-                    child: Text('Terms of Service | Privacy Policy'),
+                    child: Text('Terms of Service | Tawhan Studio'),
                   ),
                 ),
               ],
@@ -352,7 +342,7 @@ class _RemoveProductState extends State<RemoveProduct> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Tawhan POS ( มัทนาไข่สด )'),
+          title: const Text('MTN POS'),
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(

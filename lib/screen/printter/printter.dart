@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart' hide Image;
 import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
@@ -32,40 +33,35 @@ class _PrintterState extends State<Printer> {
   var Devices;
   @override
   void initState() {
-    var  _devices_esc = Provider.of<ESC>(context, listen: false);
-    // _devices_esc.startScanDevices();
-    print('########1#######');
-    // _devices_esc.stopScanDevices();
-    // print('#########2######');
+    super.initState();
+    try{
+        _devices_select = Provider.of<ESC>(context, listen: false).getESC();
+    var _devices_esc = Provider.of<ESC>(context, listen: false);
+    // // _devices_esc.startScanDevices();
+    // print('########1#######');
+    // // _devices_esc.selectDevices()();
+    // // print('#########2######');
+
     _devices_esc.selectDevices();
     setState(() {
-    _devices = _devices_esc.showDevice();
-      
+      _devices = _devices_esc.showDevice();
     });
-    //  _devices_esc.getPrintter();
-    print(_devices);
-    if (_devices.length > 0) {
-      print('device len ${_devices.length}');
-      _devices.forEach((e){
-        print('${e.name} ${e.address}  ${e.type}');
-      });
-    }
-    print('#########e######');
-      // _devices_select = Provider.of<ESC>(context, listen: false).getESC();
-    super.initState();
-    // printerManager.scanResults.listen((devices) async {
-    //   print('UI: Devices found ${devices.length}');
-    //   setState(() {
-    //     _devices = devices;
+    // //  _devices_esc.getPrintter();
 
-    //   });
-    // });
-    // _startScanDevices();
-    // loadPrint();
-    // setState(() {
-    // });
-    //  Provider.of<ESC>(context, listen: false)
-    //                 .getBranch();
+    // print('#########e######');
+
+    Timer(Duration(seconds: 5), () {
+      print(_devices);
+      if (_devices.length > 0) {
+        print('device len ${_devices.length}');
+        _devices.forEach((e) {
+          print('${e.name} ${e.address}  ${e.type}');
+        });
+      }
+    });
+    }catch(e){
+       showToast('เกิดข้อผิดพลาดเครื่องพิมพ์');
+    }
   }
 
   loadPrint() async {
@@ -95,25 +91,20 @@ class _PrintterState extends State<Printer> {
     setState(() {
       isPrinting = true;
     });
-    // if(printer) {
-    //print vai mac address
-    // PrinterBluetoothManager _printerBluetoothManager = PrinterBluetoothManager();
-    // final res = await _printerBluetoothManager.printTicket(await testTicket(paper));
-
-    // print(res.msg);
-    printerManager.selectPrinter(printer);
+    try {
+printerManager.selectPrinter(printer);
     const PaperSize paper = PaperSize.mm58;
     final profile = await CapabilityProfile.load();
     // TEST PRINT
-    final PosPrintResult res = await printerManager.printTicket(await testTicket(paper, profile));
-
+    final PosPrintResult res =
+        await printerManager.printTicket(await testTicket(paper, profile));
     showToast(res.msg);
-    // DEMO RECEIPT
-    // final PosPrintResult res2 = await printerManager.printTicket(await demoReceipt(paper));
-    // showToast(res2.msg);
-
-
-
+    }catch (e) {
+        setState(() {
+      isPrinting = false;
+    });
+    showToast(e.toString());
+    }
 
     setState(() {
       isPrinting = false;
@@ -128,41 +119,39 @@ class _PrintterState extends State<Printer> {
         shrinkWrap: true,
         itemCount: _devices.length,
         itemBuilder: (BuildContext context, int index) {
-         return
-          _devices.length <= 0 ?
-          Text('ไม่มีข้อมูล'):
-          
-          InkWell(
-            onTap: () {
-              Navigator.pop(context);
-              setState(() {
-                // _devices_select = _devices[index];
-                Provider.of<ESC>(context, listen: false)
-                    .intESC(_devices[index]);
+          return _devices.length <= 0
+              ? Text('ไม่มีข้อมูล')
+              : InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    setState(() {
+                      // _devices_select = _devices[index];
+                      Provider.of<ESC>(context, listen: false)
+                          .intESC(_devices[index]);
 
-                setState(() {
-                  _devices_select =
-                      Provider.of<ESC>(context, listen: false).getESC();
-                });
-                // localStorage.setString('blue', _devices[index].address.toString());
-                // SharedPreferences.setMockInitialValues (PrinterBluetooth _devices_select);
-                // localStorage.setMockInitialValues(_devices_select);
-              });
-              // _testPrint();
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(_devices[index].name ?? ''),
-                Text(_devices[index].address!),
-                Text(
-                  'เลือกให้ตรงชื่อเครื่องปริ้นเด้อ',
-                  style: TextStyle(color: Colors.grey[700]),
-                ),
-              ],
-            ),
-          );
+                      setState(() {
+                        _devices_select =
+                            Provider.of<ESC>(context, listen: false).getESC();
+                      });
+                      // localStorage.setString('blue', _devices[index].address.toString());
+                      // SharedPreferences.setMockInitialValues (PrinterBluetooth _devices_select);
+                      // localStorage.setMockInitialValues(_devices_select);
+                    });
+                    // _testPrint();
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(_devices[index].name ?? ''),
+                      Text(_devices[index].address!),
+                      Text(
+                        'เลือกให้ตรงชื่อเครื่องปริ้นเด้อ',
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                    ],
+                  ),
+                );
         },
       ),
     );
@@ -190,7 +179,16 @@ class _PrintterState extends State<Printer> {
     // final Image image = decodeImage(buf)!;
     // bytes += generator.image(image);
     bytes += generator.hr();
-    bytes +=generator.textEncoded(await CharsetConverter.encode('TIS-620', 'หจก.มัทนาไข่สด ฟาร์ม') ,styles: PosStyles(bold: true,align: PosAlign.center)); //ชื่อร้าน สาขา
+     bytes += generator.text('MTN',
+      styles: PosStyles(
+        height: PosTextSize.size3,
+        width: PosTextSize.size5,
+        bold: true,
+         align: PosAlign.center,
+      ));
+    bytes += generator.textEncoded(
+        await CharsetConverter.encode('TIS-620', 'หจก.มัทนาไข่สด ฟาร์ม'),
+        styles: PosStyles(bold: true, align: PosAlign.center)); //ชื่อร้าน สาขา
     bytes += generator.hr();
     bytes += generator.feed(1);
     bytes += generator.cut();
@@ -262,9 +260,10 @@ class _PrintterState extends State<Printer> {
                           child: Center(
                               child: Text(
                             // print(_devices_select);
-                             Provider.of<ESC>(context, listen: false).getESC() == null
+                            Provider.of<ESC>(context, listen: false).getESC() ==
+                                    null
                                 ? 'ยังไม่เลือก'
-                                : '${Provider.of<ESC>(context, listen: false).getESC().address}',
+                                : '${Provider.of<ESC>(context, listen: false).getESC().name}',
                             style: TextStyle(fontSize: 20, color: Colors.grey),
                           )),
                         ),
@@ -292,35 +291,6 @@ class _PrintterState extends State<Printer> {
                         child: Text(
                             _devices_select == null ? 'ค้นหา' : 'เลือกใหม่'),
                       ),
-
-                      // Text('ยังไม่เลือก')
-
-                      // Padding(
-                      //   padding: const EdgeInsets.all(8.0),
-                      //   child: DropdownButton<String>(
-                      //     value: dropdownValue,
-                      //     icon: const Icon(Icons.arrow_downward),
-                      //     iconSize: 24,
-                      //     elevation: 16,
-                      //     style: const TextStyle(color: Colors.deepPurple),
-                      //     underline: Container(
-                      //       height: 2,
-                      //       color: Colors.deepPurpleAccent,
-                      //     ),
-                      //     onChanged: (String? newValue) {
-                      //       setState(() {
-                      //         dropdownValue = newValue!;
-                      //       });
-                      //     },
-                      //     items: <String>['58 mm', '80 mm',]
-                      //         .map<DropdownMenuItem<String>>((String value) {
-                      //       return DropdownMenuItem<String>(
-                      //         value: value,
-                      //         child: Text(value,style: TextStyle(fontSize: 25)),
-                      //       );
-                      //     }).toList(),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),

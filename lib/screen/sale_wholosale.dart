@@ -409,7 +409,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                     ),
                     child: Column(
                       children: [
-                        Text('Terms of Service | Tawhan Studio'),
+                        Text('Terms of Service | Tawhan Studio V1'),
                       ],
                     ),
                   ),

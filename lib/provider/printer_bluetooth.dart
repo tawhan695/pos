@@ -32,7 +32,7 @@ class ESC with ChangeNotifier {
   List<PrinterBluetooth> _devices = [];
   startScanDevices() {
     print('_startScanDevices');
-    _devices = [];
+    // _devices = [];
     printerManager.startScan(Duration(seconds: 4));
   }
 
@@ -268,6 +268,7 @@ class ESC with ChangeNotifier {
     final Generator generator = Generator(paper, profile);
     // Uint8List encThai41 = await CharsetConverter.encode('TIS-620', 'สวัวสดีนี้คือการทดสอบภาษา81ไทย');
     List<int> bytes = [];
+     bytes += generator.setGlobalCodeTable('CP1250');
     // Print image
     // bytes += generator.image(image);
       bytes += generator.text('MTN',

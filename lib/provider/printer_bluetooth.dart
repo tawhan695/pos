@@ -269,6 +269,7 @@ class ESC with ChangeNotifier {
     // Uint8List encThai41 = await CharsetConverter.encode('TIS-620', 'สวัวสดีนี้คือการทดสอบภาษา81ไทย');
     List<int> bytes = [];
      bytes += generator.setGlobalCodeTable('CP1250');
+     
     // Print image
     // bytes += generator.image(image);
       bytes += generator.text('MTN',

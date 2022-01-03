@@ -171,6 +171,7 @@ class _PrintterState extends State<Printer> {
     List<int> bytes = [];
     // bytes += generator.setGlobalCodeTable('RK1048');
     bytes += generator.setGlobalCodeTable('CP1250');
+    // bytes += generator.setGlobalCodeTable('TM-T20');
     bytes += generator.textEncoded(
         await CharsetConverter.encode('TIS-620', 'ทดสอบ')); //ชื่อร้าน สาขา
     bytes += generator.textEncoded(

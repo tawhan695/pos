@@ -178,8 +178,8 @@ class _PrintterState extends State<Printer> {
         await CharsetConverter.encode('TIS620', 'หจก.มัทนาไข่สด ฟาร์ม')); //ชื่อร้าน สาขา
           
      bytes += generator.feed(2);
-    generator.feed(2);
-    generator.cut();
+     bytes +=generator.feed(2);
+     bytes +=generator.cut();
     return bytes;
     
   }

@@ -287,6 +287,12 @@ class _SettingState extends State<Setting> {
                   leading:  Icon(Icons.settings,size: 50),
                 ),
               ),
+              Card(
+                child: ListTile(
+                  title: Text('ข้อมูลสาขา',style: TextStyle(fontSize:30)),
+                  leading:  Icon(Icons.home,size: 50),
+                ),
+              ),
 
               // Text('setting'),
             ],

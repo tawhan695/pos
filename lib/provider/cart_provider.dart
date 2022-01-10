@@ -145,7 +145,7 @@ class CartProvider with ChangeNotifier {
 
         // อย่าลืมทำการตั้งค่าตัวนี้ด้วยเด้อตัวที่กำหนดว่าจะขายปลีกขายส่ง
 
-        if (data['$sku']!.quantity >= 10) {
+        if (data['$sku']!.quantity >= 5) {
           data['$sku']!.price =
               double.parse(producs['$sku']!.wholesale_price.toString());
           data['$sku']!.status_sale = 'ขายส่ง';

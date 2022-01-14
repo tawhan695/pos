@@ -19,12 +19,12 @@ class Network {
   }
  
   logOut() async {
+    await getData2('/logout');
     final pref = await SharedPreferences.getInstance();
-    // var token1 = jsonDecode(pref.getString('token').toString());
-    // print(token1);
     await pref.clear();
     var token2 = jsonDecode(pref.getString('token').toString());
     print(token2);
+   
     if (token2 !=null) {
       return false;
     } else {

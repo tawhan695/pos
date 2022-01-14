@@ -375,8 +375,12 @@ class _CashState extends State<Cash> {
                     ),
                     onPressed: _submit
                         ? () async {
-                            print(
-                                'jsonEncode(ListJson) : ${jsonEncode(ListJson)}');
+                            // print(
+                            //     'tel: ${Provider.of<CustomerProvider>(context,
+                            //               listen: false)
+                            //           .selectCustomer()[0]
+                            //           .phone
+                            //           .toString()}');
                             var data = {
                               'cart': jsonEncode(ListJson),
                               'cash': sum,

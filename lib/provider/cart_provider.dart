@@ -92,13 +92,14 @@ class CartProvider with ChangeNotifier {
       producs["${body[i]['sku']}"] = product;
     }
     }
-    // notifyListeners();
+    notifyListeners();
   }
 
   addCart(sku, qty) async {
     try {
       bool status = false;
     qty = int.parse(qty.toString());
+    print('$sku ${producs['$sku']!.qty}');
     if (producs['$sku']!.qty != 0 && producs['$sku']!.qty >= qty) {
       if (data['$sku'] == null) {
         var id = producs['$sku']!.sku;

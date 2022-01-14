@@ -34,6 +34,10 @@ import 'dart:async';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+// import 'package:flutter_url/splash_screen.dart';
+// import 'package:url_launcher/url_launcher.dart';
+
 class SaleWholosale extends StatefulWidget {
   // SaleWholosale({Key? key}) : super(key: key);
   static const RouteName = '/sale-wholosale';
@@ -279,6 +283,14 @@ class _SaleWholosaleState extends State<SaleWholosale> {
       print(User);
     });
   }
+  // _launchURLBrowser() async {
+  //   const url = 'https://tawhan.zyx/';
+  //   if (await canLaunch(url)) {
+  //     await launch(url);
+  //   } else {
+  //     throw 'Could not launch $url';
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -386,12 +398,20 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                   leading: Icon(Icons.settings),
                   title: Text('ตั้งค่า'),
                 ),
+                // ListTile(
+                //   onTap:  ,
+                //   leading: Icon(Icons.settings),
+                //   title: Text('ระบบหลังร้าน'),
+                // ),
                 ListTile(
                     leading: Icon(Icons.logout),
                     onTap: () async {
                       var stt = await Network().logOut();
-                      //print('stt $stt');
+                      print('stt $stt');
                       if (stt == true) {
+                      // var logout = await Network().getData2('/logout');
+                      // var body = json.decode(logout.body);
+                      // print(body['success']);
                         Navigator.of(context).pushNamedAndRemoveUntil(
                             Login.RouteName, (route) => false);
                       }
@@ -811,7 +831,7 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                                                   //   showAlertDialog(context);
                                                   // }
                                                   print(
-                                                      'qty ${snapshot.data[index].qty}');
+                                                      'qty product ${snapshot.data[index].qty}');
                                                   if (snapshot.data[index].qty >
                                                       0) {
                                                     var SSt = await Provider.of<

@@ -375,6 +375,9 @@ class _CashState extends State<Cash> {
                     ),
                     onPressed: _submit
                         ? () async {
+                          setState(() {
+                            _submit= false;
+                          });
                             // print(
                             //     'tel: ${Provider.of<CustomerProvider>(context,
                             //               listen: false)
@@ -425,7 +428,9 @@ class _CashState extends State<Cash> {
                                       listen: false)
                                   .emtySelect();
                             } else {
-                              print('ไม่สำเร็จ');
+                               setState(() {
+                            _submit= true;
+                          });
                             }
 
                             // Navigator.pushReplacementNamed(context,Change.RouteName);

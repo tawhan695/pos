@@ -389,6 +389,10 @@ class _ReceiptState extends State<Receipt> {
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold))),
                   DataColumn(
+                      label: Text('สถานะ',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold))),
+                  DataColumn(
                       label: Text('จัดการ',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold))),
@@ -410,6 +414,12 @@ class _ReceiptState extends State<Receipt> {
                         DataCell(Text('${e.created_at}')),
                         DataCell(Text('${e.paid_by}')),
                         DataCell(Text('฿${e.net_amount}')),
+                        DataCell(Text('${e.status}',
+                            style: TextStyle(
+                                color: e.status == 'สำเร็จ'
+                                    ? Colors.green
+                                    : Colors.red,
+                                fontWeight: FontWeight.bold))),
                         DataCell(IconButton(
                             onPressed: () {
                               if (CheckNet == false) {
@@ -431,7 +441,6 @@ class _ReceiptState extends State<Receipt> {
                     )
                     .toList(),
               );
-           
             }),
             Container(
               child: Row(

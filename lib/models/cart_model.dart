@@ -7,7 +7,8 @@ class CartModel
     var quantity;
     var product_id;
     var status_sale;
+    var wholesaler;
     double sum;
 
-    CartModel(this.id, this.name, this.image, this.price, this.quantity, this.product_id,this.sum,this.status_sale);
+    CartModel(this.id, this.name, this.image, this.price, this.quantity, this.product_id,this.sum,this.status_sale,this.wholesaler);
 }

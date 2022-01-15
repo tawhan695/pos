@@ -170,7 +170,10 @@ class _ProductScreenState extends State<ProductScreen> {
                   e['wholesale_price'],
                   e['sale_price'],
                   e['qty'],
-                  e['image']);
+                  e['image'],
+                  e['wholesaler'],
+                  
+                  );
               productModel.add(products);
             }
           } else {
@@ -183,7 +186,9 @@ class _ProductScreenState extends State<ProductScreen> {
                 e['wholesale_price'],
                 e['sale_price'],
                 e['qty'],
-                e['image']);
+                e['image'],
+                e['wholesaler']       
+                );
             productModel.add(products);
           }
         },

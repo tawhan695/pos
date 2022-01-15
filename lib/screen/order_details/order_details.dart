@@ -86,7 +86,7 @@ class _OrderDetailState extends State<OrderDetail> {
         final res = await Network().getDataEmpty('/order/${widget.order.id}');
         if (res != 'error') {
           var links = json.decode(res.body)['success'];
-          print(links);
+          print(json.decode(res.body));
           if (links == true) {
             Navigator.of(context)
                 .pushNamedAndRemoveUntil(Receipt.RouteName, (route) => false);

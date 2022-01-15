@@ -33,7 +33,9 @@ class ProductProvider with ChangeNotifier {
           e['wholesale_price'],
           e['sale_price'],
           e['qty'],
-          e['image']);
+          e['image'],
+          e['wholesaler']
+          );
       productModel.add(products);
     });
     }

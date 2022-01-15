@@ -113,7 +113,10 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                   e['wholesale_price'],
                   e['sale_price'],
                   e['qty'],
-                  e['image']);
+                  e['image'],
+                  e['wholesaler']
+                  
+                  );
               productModel.add(products);
             }
           } else {
@@ -126,7 +129,9 @@ class _SaleWholosaleState extends State<SaleWholosale> {
                 e['wholesale_price'],
                 e['sale_price'],
                 e['qty'],
-                e['image']);
+                e['image'],
+                e['wholesaler'],
+                );
             productModel.add(products);
           }
         },

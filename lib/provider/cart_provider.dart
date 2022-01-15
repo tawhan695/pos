@@ -26,15 +26,15 @@ class CartProvider with ChangeNotifier {
    try {
     data = {};
     cartList.forEach((e) {
-      print(' delete >>id product ' + e.id.toString());
-      print('cart qty ' + e.quantity.toString());
-      print('qty ' + producs['${e.id}']!.qty.toString());
-      print('new qty ${producs['${e.id}']!.qty} + ${e.quantity} = ');
+      // print(' delete >>id product ' + e.id.toString());
+      // print('cart qty ' + e.quantity.toString());
+      // print('qty ' + producs['${e.id}']!.qty.toString());
+      // print('new qty ${producs['${e.id}']!.qty} + ${e.quantity} = ');
       producs['${e.id}']!.qty += e.quantity;
-      print(' ' + producs['${e.id}']!.qty.toString());
+      // print(' ' + producs['${e.id}']!.qty.toString());
     });
    }catch(e){
-     print('error $e');
+    //  print('error $e');
     cartList.clear();
    }
     cartList.clear();
@@ -86,7 +86,9 @@ class CartProvider with ChangeNotifier {
           body[i]['wholesale_price'],
           body[i]['sale_price'],
           body[i]['qty'],
-          body[i]['image']);
+          body[i]['image'],
+          body[i]['wholesaler'],
+          );
       productList.add(product);
 
       producs["${body[i]['sku']}"] = product;
@@ -99,12 +101,13 @@ class CartProvider with ChangeNotifier {
     try {
       bool status = false;
     qty = int.parse(qty.toString());
-    print('$sku ${producs['$sku']!.qty}');
+    // print('$sku ${producs['$sku']!.qty}');
     if (producs['$sku']!.qty != 0 && producs['$sku']!.qty >= qty) {
       if (data['$sku'] == null) {
         var id = producs['$sku']!.sku;
         var name = producs['$sku']!.name;
         var image = producs['$sku']!.image;
+        var wholesaler = producs['$sku']!.wholesaler;
         var price = 0.0;
         var quantity = 0;
         producs['$sku']!.qty -= 1;
@@ -122,6 +125,7 @@ class CartProvider with ChangeNotifier {
           product_id,
           sum,
           'ขายปลีก',
+          wholesaler,
         );
         data['$sku'] = cart;
         // print(data['$sku']!.name);
@@ -146,7 +150,7 @@ class CartProvider with ChangeNotifier {
 
         // อย่าลืมทำการตั้งค่าตัวนี้ด้วยเด้อตัวที่กำหนดว่าจะขายปลีกขายส่ง
 
-        if (data['$sku']!.quantity >= 5) {
+        if (data['$sku']!.quantity >= data['$sku']!.wholesaler) {
           data['$sku']!.price =
               double.parse(producs['$sku']!.wholesale_price.toString());
           data['$sku']!.status_sale = 'ขายส่ง';

@@ -133,7 +133,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: Column(
                       children: [
                         Text(
-                          '${Wallet.toStringAsFixed(1)}',
+                          Wallet != null ?
+                          '${Wallet.toStringAsFixed(1)}'
+                          :'0',
                           style: TextStyle(
                               fontSize: 60,
                               fontWeight: FontWeight.bold,
@@ -200,7 +202,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         style: TextStyle(fontSize: 20))),
                                 Container(
                                     padding: EdgeInsets.only(top: 10),
-                                    child: Text('${ordersum.toStringAsFixed(1)}',
+                                    child: Text(
+                                      ordersum != null ?
+                                      '${ordersum.toStringAsFixed(1)}'
+                                      :'0',
                                         style: TextStyle(
                                             fontSize: 40,
                                             color: Colors.black87))),

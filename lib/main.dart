@@ -104,7 +104,7 @@ class MyApp extends StatelessWidget {
  
             routes: {
               Login.RouteName: (context) => Login(),
-              Sale.RouteName: (context) => Sale(),
+              // Sale.RouteName: (context) => Sale(),
               SaleWholosale.RouteName: (context) => SaleWholosale(),
               // PaySuccess.RouteName: (context) => PaySuccess(),
               UserAddScreen.RouteName: (context) => UserAddScreen(),

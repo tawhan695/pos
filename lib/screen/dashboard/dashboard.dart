@@ -50,12 +50,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     
       res = await Network().getData2(
            '/product/details');
-  
     List productModel = [];
     if (res == 'error') {
       // _AlertNet(context);
     } else {
       var body = json.decode(res.body)['product'];
+    print('body');
+    print(body);
       body.forEach(
         (e) {
                productModel.add(

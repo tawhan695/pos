@@ -31,6 +31,7 @@ import 'package:flutter_image/flutter_image.dart';
 import 'package:connectivity/connectivity.dart';
 import 'dart:io';
 import 'dart:async';
+import 'package:flutter/services.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -173,9 +174,10 @@ class _SaleWholosaleState extends State<SaleWholosale> {
       content: TextFormField(
         controller: _controller,
         keyboardType: TextInputType.number,
-        inputFormatters: <TextInputFormatter>[
-          WhitelistingTextInputFormatter.digitsOnly
-        ],
+        // inputFormatters: <TextInputFormatter>[
+        //   WhitelistingTextInputFormatter.digitsOnly
+        // ],
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9.,]+')),],
         decoration: InputDecoration(
           labelText: "จำนวนสินค้า",
           hintText: "จำนวนสินค้า",
